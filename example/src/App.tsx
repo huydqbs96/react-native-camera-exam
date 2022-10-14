@@ -4,13 +4,11 @@ import { StyleSheet, View } from 'react-native';
 import { CameraView } from 'react-native-camera-exam';
 
 export default function App() {
-  // React.useEffect(() => {
-  //   multiply(3, 7).then(setResult);
-  // }, []);
-
   return (
     <View style={styles.container}>
-      <CameraView />
+      <CameraView 
+        width={80}
+      />
     </View>
   );
 }
