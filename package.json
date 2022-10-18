@@ -73,7 +73,9 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-vision-camera": "*"
+    "react-native-vision-camera": "*",
+    "axios": "0.27.2",
+    "@bam.tech/react-native-image-resizer": "^3.0.3"
   },
   "jest": {
     "preset": "react-native",
@@ -150,6 +152,8 @@
     ]
   },
   "dependencies": {
-    "react-native-vision-camera": "^2.14.1"
+    "@bam.tech/react-native-image-resizer": "^3.0.3",
+    "react-native-vision-camera": "^2.14.1",
+    "axios": "0.27.2"
   }
 }
