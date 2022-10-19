@@ -69,7 +69,7 @@ export function CameraView(propCamera: CameraType) {
           // response.name is the name of the new image with the extension
           // response.size is the size of the new image
           console.log('response => ', response);
-          pushImage(response.uri, response.name);
+          pushImage(response.uri, response.name, 1);
         })
         .catch((err) => {
           // Oops, something went wrong. Check that the filename is correct and
@@ -94,7 +94,7 @@ export function CameraView(propCamera: CameraType) {
     }
   }
 
-  const pushImage = async (uriImage: string, nameFile: string) => {
+  const pushImage = async (uriImage: string, nameFile: string, timeCall: number) => {
     var formData = new FormData();
     formData.append("examKey", "beetsoft031");
     formData.append("userId", "2");
@@ -117,6 +117,9 @@ export function CameraView(propCamera: CameraType) {
 
     } catch (e) {
       console.log('error => ', e);
+      if (timeCall <= 3) {
+        pushImage(uriImage, nameFile, timeCall + 1);
+      }
     }
   }
 
