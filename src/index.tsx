@@ -1,7 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Text } from 'react-native';
-import { useCameraDevices, Camera } from 'react-native-vision-camera';
+import { StyleSheet, Text, Platform, ViewStyle } from 'react-native';
+import { 
+  useCameraDevices, 
+  Camera,
+  CameraPermissionStatus,
+  CameraPermissionRequestResult
+} from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
 
@@ -10,24 +15,40 @@ type CameraType = {
   height?: number
   frameWidth?: number
   framHeight?: number
-  quality?: 'quality' | 'balanced' | 'speed'
+  quality?: number
+  urlSystem: string
+  style?: ViewStyle
 }
+
+const isIOS: boolean = Platform.OS === "ios";
 
 export function CameraView(propCamera: CameraType) {
 
-  const { width, height } = propCamera
+  const { 
+    width, 
+    height, 
+    quality,
+    urlSystem,
+    style
+  } = propCamera
 
   const devices = useCameraDevices();
   const camera = useRef<Camera>(null)
   const device = devices.front
 
   const [uriImage, setUriImage] = useState<string>('');
+  const [permissionCamera, setPermissionCamera] = useState<CameraPermissionStatus |
+    CameraPermissionRequestResult | ''>('');
 
-  useEffect(() => {
-    setTimeout(() => {
-      takePhotoAuto()
-    }, 3000);
-  });
+    useEffect(() => {
+      if (permissionCamera != 'authorized') {
+        checkCameraPermission()
+      } else {
+        setTimeout(() => {
+          takePhotoAuto()
+        }, 5000);
+      }
+    }, [permissionCamera]);
 
   useEffect(() => {
     if (uriImage) {
@@ -38,7 +59,8 @@ export function CameraView(propCamera: CameraType) {
         720,
         720,
         'PNG',
-        0.15, 0,
+        quality || 0.15, 
+        0,
         undefined, false
       )
         .then((response) => {
@@ -58,6 +80,20 @@ export function CameraView(propCamera: CameraType) {
     }
   }, [uriImage]);
 
+  const checkCameraPermission = async () => {
+    const cameraPermission = await Camera.getCameraPermissionStatus();
+    console.log('permission => ', cameraPermission);
+
+    if (cameraPermission != 'authorized') {
+      const newCameraPermission = await Camera.requestCameraPermission();
+      setPermissionCamera(newCameraPermission);
+    } else {
+      setTimeout(() => {
+        takePhotoAuto()
+      }, 3000);
+    }
+  }
+
   const pushImage = async (uriImage: string, nameFile: string) => {
     var formData = new FormData();
     formData.append("examKey", "beetsoft031");
@@ -70,7 +106,7 @@ export function CameraView(propCamera: CameraType) {
     try {
       let response = await axios({
         method: "POST",
-        url: "https://bks.beetsoft.com.vn/api/v1/uploadTrackingImage",
+        url: urlSystem,
         headers: {
           "Content-Type": "multipart/form-data",
           "Accept": "application/json",
@@ -89,8 +125,13 @@ export function CameraView(propCamera: CameraType) {
       flash: 'off'
     })
     console.log('data image => ', photo?.path);
-    setUriImage("file:/" + photo?.path)
+    if (isIOS) {
+      setUriImage("file:/" + photo?.path)
+    } else {
+      setUriImage(photo?.path!)
+    }
   }
+
   if (device == null) return <><Text>null camera</Text></>;
 
   return (
@@ -98,7 +139,7 @@ export function CameraView(propCamera: CameraType) {
       photo={true}
       ref={camera}
       style={[
-        styles.cameraView,
+        style || styles.cameraView,
         {
           width: width || 60,
           height: height || 60
@@ -123,7 +164,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   cameraView: {
-    width: 100,
-    height: 100
+    margin: 20
   }
 });
