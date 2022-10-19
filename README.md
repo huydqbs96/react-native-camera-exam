@@ -3,7 +3,14 @@ Camera adk for exam
 ## Installation
 
 ```sh
-npm install react-native-camera-exam
+npm install git+https://github.com/huydqbs96/react-native-camera-exam.git
+
+require additional installation
+- "@bam.tech/react-native-image-resizer"
+- "react-native-vision-camera"
+- "axios" version "0.27.2" or lower
+
+
 ```
 
 ## Usage

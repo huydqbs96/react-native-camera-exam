@@ -300,15 +300,7 @@ PODS:
   - React-jsinspector (0.68.2)
   - React-logger (0.68.2):
     - glog
-  - react-native-camera (4.2.1):
-    - React-Core
-    - react-native-camera/RCT (= 4.2.1)
-    - react-native-camera/RN (= 4.2.1)
   - react-native-camera-exam (0.1.0):
-    - React-Core
-  - react-native-camera/RCT (4.2.1):
-    - React-Core
-  - react-native-camera/RN (4.2.1):
     - React-Core
   - react-native-image-resizer (3.0.3):
     - React-Core
@@ -434,7 +426,6 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-camera-exam (from `../..`)
   - "react-native-image-resizer (from `../node_modules/@bam.tech/react-native-image-resizer`)"
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -511,8 +502,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
-  react-native-camera:
-    :path: "../node_modules/react-native-camera"
   react-native-camera-exam:
     :path: "../.."
   react-native-image-resizer:
@@ -582,7 +571,6 @@ SPEC CHECKSUMS:
   React-jsiexecutor: b7b553412f2ec768fe6c8f27cd6bafdb9d8719e6
   React-jsinspector: c5989c77cb89ae6a69561095a61cce56a44ae8e8
   React-logger: a0833912d93b36b791b7a521672d8ee89107aff1
-  react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-camera-exam: 449d65aee7210c9f20b1c3ca1ae2d36c758fa95f
   react-native-image-resizer: fd06eb3e557fd66ce25deaae2477545cb5ce8b61
   React-perflogger: a18b4f0bd933b8b24ecf9f3c54f9bf65180f3fe6

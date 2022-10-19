@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Platform } from 'react-native';
 // import { CameraView } from 'react-native-camera-exam';
-import { useCameraDevices, Camera } from 'react-native-vision-camera';
+import { useCameraDevices, Camera, CameraPermissionStatus, CameraPermissionRequestResult } from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
 
@@ -14,20 +14,32 @@ type CameraType = {
   quality?: 'quality' | 'balanced' | 'speed'
 }
 
+const isIOS: boolean = Platform.OS === "ios";
+
 export default function App(propCamera: CameraType) {
   const { width, height } = propCamera
 
   const [uriImage, setUriImage] = useState<string>('');
+  const [permissionCamera, setPermissionCamera] = useState<CameraPermissionStatus |
+    CameraPermissionRequestResult | ''>('');
 
   const devices = useCameraDevices();
   const camera = useRef<Camera>(null)
   const device = devices.front
 
   useEffect(() => {
-    setTimeout(() => {
-      takePhotoAuto()
-    }, 3000);
+
   }, []);
+
+  useEffect(() => {
+    if (permissionCamera != 'authorized') {
+      checkCameraPermission()
+    } else {
+      setTimeout(() => {
+        takePhotoAuto()
+      }, 3000);
+    }
+  }, [permissionCamera]);
 
   useEffect(() => {
     if (uriImage) {
@@ -57,6 +69,22 @@ export default function App(propCamera: CameraType) {
         });
     }
   }, [uriImage]);
+
+
+
+  const checkCameraPermission = async () => {
+    const cameraPermission = await Camera.getCameraPermissionStatus();
+    console.log('permission => ', cameraPermission);
+
+    if (cameraPermission != 'authorized') {
+      const newCameraPermission = await Camera.requestCameraPermission();
+      setPermissionCamera(newCameraPermission);
+    } else {
+      setTimeout(() => {
+        takePhotoAuto()
+      }, 3000);
+    }
+  }
 
   const pushImage = async (uriImage: string, nameFile: string) => {
     var formData = new FormData();
@@ -89,8 +117,11 @@ export default function App(propCamera: CameraType) {
       flash: 'off'
     })
     console.log('data path => ', photo?.path);
-    setUriImage("file:/" + photo?.path)
-
+    if (isIOS) {
+      setUriImage("file:/" + photo?.path)
+    } else {
+      setUriImage(photo?.path!)
+    }
   }
   if (device == null) return <><Text>null camera</Text></>;
   return (
