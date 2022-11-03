@@ -37,10 +37,12 @@ export function CameraView(propCamera: CameraType) {
     style,
     examKey,
     userId,
-    timeCapture = 5000,
+    timeCapture = 30000,
     widthImageSize,
     heightImageSize,
   } = propCamera;
+
+  console.log('props Camera => ', propCamera);
 
   const devices = useCameraDevices();
   const camera = useRef<Camera>(null)
@@ -62,7 +64,7 @@ export function CameraView(propCamera: CameraType) {
       return () => {
         clearInterval(interval);
       };
-    }, [permissionCamera]);
+    }, [permissionCamera, uriImage]);
 
   useEffect(() => {
     if (uriImage) {
