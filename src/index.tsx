@@ -62,6 +62,7 @@ export function CameraView(propCamera: CameraType) {
         }, timeCapture);
       }
       return () => {
+        console.log('disable', interval);
         clearInterval(interval);
       };
     }, [permissionCamera, uriImage]);
