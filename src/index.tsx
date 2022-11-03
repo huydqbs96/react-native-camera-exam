@@ -18,19 +18,29 @@ type CameraType = {
   quality?: number
   urlSystem: string
   style?: ViewStyle
+  examKey?: string;
+  userId?: string;
+  timeCapture?: number;
+  widthImageSize?: number;
+  heightImageSize?: number;
 }
 
 const isIOS: boolean = Platform.OS === "ios";
 
 export function CameraView(propCamera: CameraType) {
 
-  const { 
-    width, 
-    height, 
+  const {
+    width,
+    height,
     quality,
     urlSystem,
-    style
-  } = propCamera
+    style,
+    examKey,
+    userId,
+    timeCapture = 5000,
+    widthImageSize,
+    heightImageSize,
+  } = propCamera;
 
   const devices = useCameraDevices();
   const camera = useRef<Camera>(null)
@@ -41,13 +51,17 @@ export function CameraView(propCamera: CameraType) {
     CameraPermissionRequestResult | ''>('');
 
     useEffect(() => {
+      let interval: any;
       if (permissionCamera != 'authorized') {
         checkCameraPermission()
       } else {
-        setTimeout(() => {
-          takePhotoAuto()
-        }, 5000);
+        interval = setTimeout(() => {
+          takePhotoAuto();
+        }, timeCapture);
       }
+      return () => {
+        clearInterval(interval);
+      };
     }, [permissionCamera]);
 
   useEffect(() => {
@@ -56,8 +70,8 @@ export function CameraView(propCamera: CameraType) {
 
       ImageResizer.createResizedImage(
         uriImage,
-        720,
-        720,
+        widthImageSize || 720,
+        heightImageSize || 720,
         'PNG',
         quality || 0.15, 
         0,
@@ -90,14 +104,20 @@ export function CameraView(propCamera: CameraType) {
     } else {
       setTimeout(() => {
         takePhotoAuto()
-      }, 3000);
+      }, timeCapture);
     }
   }
 
+  /**
+   * 
+   * @param uriImage image after resize
+   * @param nameFile 
+   * @param timeCall the number of times the function to upload images was called
+   */
   const pushImage = async (uriImage: string, nameFile: string, timeCall: number) => {
     var formData = new FormData();
-    formData.append("examKey", "beetsoft031");
-    formData.append("userId", "2");
+    formData.append("examKey", examKey);
+    formData.append("userId", userId);
     formData.append("image", {
       uri: uriImage,
       type: "image/png",
@@ -119,10 +139,36 @@ export function CameraView(propCamera: CameraType) {
       console.log('error => ', e);
       if (timeCall <= 3) {
         pushImage(uriImage, nameFile, timeCall + 1);
+      } else {
+        logError(e)
       }
     }
   }
 
+  /**
+   * log error when upload image error after 3 times
+   */
+  const logError = async (error: any) => {
+    console.log('error send => ', error)
+    // try {
+    //   let response = await axios({
+    //     method: 'POST',
+    //     url: urlSystem,
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //       'Accept': 'application/json',
+    //     },
+    //     data: error,
+    //   });
+    //   console.log('reponse api => ', response.data);
+    // } catch (e) {
+    //   console.log('error => ', e);
+    // }
+  };
+
+  /**
+   * take photo auto after 1 specified time
+   */
   const takePhotoAuto = async () => {
     const photo = await camera.current?.takePhoto({
       flash: 'off'
