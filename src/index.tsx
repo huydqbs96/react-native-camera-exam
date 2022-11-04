@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Platform, ViewStyle, AppState } from 'react-native';
+import { StyleSheet, Platform, ViewStyle, AppState, Text } from 'react-native';
 import { 
   useCameraDevices, 
   Camera,
@@ -216,7 +216,7 @@ export function CameraView(propCamera: CameraType) {
     }
   };
 
-  // if (device == null) return <><Text>null camera</Text></>;
+  if (device == null) return <><Text>null camera</Text></>;
 
   return (
     <Camera
@@ -229,7 +229,7 @@ export function CameraView(propCamera: CameraType) {
           height: height || 60
         }
       ]}
-      device={device!}
+      device={device}
       isActive={appStateVisible == 'active'}
     />
   );
