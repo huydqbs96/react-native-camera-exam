@@ -11,19 +11,19 @@ import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
 
 type CameraType = {
-  width?: number
-  height?: number
-  frameWidth?: number
-  framHeight?: number
-  quality?: number
-  urlSystem: string
-  style?: ViewStyle
-  examKey?: string;
-  userId?: string;
-  timeCapture?: number;
-  widthImageSize?: number;
-  heightImageSize?: number;
-}
+  width?: number; // camera view width size
+  height?: number; // camera view height size
+  frameWidth?: number;
+  framHeight?: number;
+  quality?: number; // quality image after resize image capture
+  urlSystem: string; // url using send image to server
+  style?: ViewStyle; // style camera view
+  examKey?: string; // exam id
+  userId?: string; // user id
+  timeCapture?: number; // timeout to take pictures automatically
+  widthImageSize?: number; // width size after resize image
+  heightImageSize?: number; // height size after resize image
+};
 
 const isIOS: boolean = Platform.OS === "ios";
 
@@ -173,16 +173,20 @@ export function CameraView(propCamera: CameraType) {
    * take photo auto after 1 specified time
    */
   const takePhotoAuto = async () => {
-    const photo = await camera.current?.takePhoto({
-      flash: 'off'
-    })
-    console.log('data image => ', photo?.path);
-    if (isIOS) {
-      setUriImage("file:/" + photo?.path)
-    } else {
-      setUriImage(photo?.path!)
+    try {
+      const photo = await camera.current?.takePhoto({
+        flash: 'off',
+      });
+      console.log('data image => ', photo?.path);
+      if (isIOS) {
+        setUriImage('file:/' + photo?.path);
+      } else {
+        setUriImage(photo?.path!);
+      }
+    } catch (error) {
+      console.warn('error when take photo => ', error);
     }
-  }
+  };
 
   if (device == null) return <><Text>null camera</Text></>;
 
