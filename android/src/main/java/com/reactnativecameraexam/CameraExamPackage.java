@@ -10,7 +10,6 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import fr.bamlab.rnimageresizer.ImageResizerPackage;
 
 public class CameraExamPackage implements ReactPackage {
     @NonNull
@@ -18,7 +17,6 @@ public class CameraExamPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new CameraExamModule(reactContext));
-        modules.add(new ImageResizerPackage());
         return modules;
     }
 
