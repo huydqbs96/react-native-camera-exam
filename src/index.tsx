@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Text, Platform, ViewStyle } from 'react-native';
+import { StyleSheet, Text, Platform, ViewStyle, AppState } from 'react-native';
 import { 
   useCameraDevices, 
   Camera,
@@ -53,6 +53,27 @@ export function CameraView(propCamera: CameraType) {
   const [uriImage, setUriImage] = useState<string>('');
   const [permissionCamera, setPermissionCamera] = useState<CameraPermissionStatus |
     CameraPermissionRequestResult | ''>('');
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App has come to the foreground!');
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log('AppState', appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
     useEffect(() => {
       let interval: any;
@@ -190,11 +211,12 @@ export function CameraView(propCamera: CameraType) {
         setUriImage(photo?.path!);
       }
     } catch (error) {
-      console.warn('error when take photo => ', error);
+      setUriImage('');
+      console.warn('error when take photo => ', error); 
     }
   };
 
-  if (device == null) return <><Text>null camera</Text></>;
+  // if (device == null) return <><Text>null camera</Text></>;
 
   return (
     <Camera
@@ -207,8 +229,8 @@ export function CameraView(propCamera: CameraType) {
           height: height || 60
         }
       ]}
-      device={device}
-      isActive={true}
+      device={device!}
+      isActive={appStateVisible == 'active'}
     />
   );
 }
