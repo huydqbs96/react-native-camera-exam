@@ -17,10 +17,11 @@ type CameraType = {
   framHeight?: number;
   quality?: number; // quality image after resize image capture
   urlSystem: string; // url using send image to server
+  urlLogErr: string; // url send log err to server
   style?: ViewStyle; // style camera view
-  examKey?: string; // exam id
-  userId?: string; // user id
-  timeCapture?: number; // timeout to take pictures automatically
+  examId: string; // exam id
+  userId: string; // user id
+  timeCapture?: number; // timeout between each auto take picture
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
 };
@@ -34,9 +35,10 @@ export function CameraView(propCamera: CameraType) {
     height,
     quality,
     urlSystem,
+    urlLogErr,
     style,
-    examKey,
-    userId,
+    examId = "",
+    userId = "",
     timeCapture = 30000,
     widthImageSize,
     heightImageSize,
@@ -62,7 +64,6 @@ export function CameraView(propCamera: CameraType) {
         }, timeCapture);
       }
       return () => {
-        console.log('disable', interval);
         clearInterval(interval);
       };
     }, [permissionCamera, uriImage]);
@@ -119,7 +120,7 @@ export function CameraView(propCamera: CameraType) {
    */
   const pushImage = async (uriImage: string, nameFile: string, timeCall: number) => {
     var formData = new FormData();
-    formData.append("examKey", examKey);
+    formData.append("examId", examId);
     formData.append("userId", userId);
     formData.append("image", {
       uri: uriImage,
@@ -153,20 +154,25 @@ export function CameraView(propCamera: CameraType) {
    */
   const logError = async (error: any) => {
     console.log('error send => ', error)
-    // try {
-    //   let response = await axios({
-    //     method: 'POST',
-    //     url: urlSystem,
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data',
-    //       'Accept': 'application/json',
-    //     },
-    //     data: error,
-    //   });
-    //   console.log('reponse api => ', response.data);
-    // } catch (e) {
-    //   console.log('error => ', e);
-    // }
+    const body = {
+      user_id: userId,
+      exam_id: examId,
+      message: error,
+    }
+    try {
+      let response = await axios({
+        method: 'POST',
+        url: urlLogErr,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
+        },
+        data: body,
+      });
+      console.log('reponse api log error => ', response.data);
+    } catch (e) {
+      console.log('error log => ', e);
+    }
   };
 
   /**
