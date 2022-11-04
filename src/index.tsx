@@ -45,7 +45,8 @@ export function CameraView(propCamera: CameraType) {
   } = propCamera;
 
   console.log('props Camera => ', propCamera);
-
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const devices = useCameraDevices();
   const camera = useRef<Camera>(null)
   const device = devices.front
@@ -53,8 +54,7 @@ export function CameraView(propCamera: CameraType) {
   const [uriImage, setUriImage] = useState<string>('');
   const [permissionCamera, setPermissionCamera] = useState<CameraPermissionStatus |
     CameraPermissionRequestResult | ''>('');
-  const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
