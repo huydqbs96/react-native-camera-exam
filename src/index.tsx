@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Platform, ViewStyle, AppState } from 'react-native';
+import { StyleSheet, Platform, ViewStyle, AppState, ActivityIndicator } from 'react-native';
 import { 
   useCameraDevices, 
   Camera,
@@ -30,7 +30,6 @@ type CameraType = {
 const isIOS: boolean = Platform.OS === "ios";
 
 export function CameraView(propCamera: CameraType) {
-
   const {
     width,
     height,
@@ -38,27 +37,27 @@ export function CameraView(propCamera: CameraType) {
     urlSystem,
     urlLogErr,
     style,
-    examId = "",
-    userId = "",
+    examId = '',
+    userId = '',
     timeCapture = 30000,
     widthImageSize,
     heightImageSize,
-    viewErrCamera
+    viewErrCamera,
   } = propCamera;
 
   console.log('props Camera => ', propCamera);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const devices = useCameraDevices();
-  const camera = useRef<Camera>(null)
-  const device = devices.front
+  const camera = useRef<Camera>(null);
+  const device = devices.front;
 
   const [uriImage, setUriImage] = useState<string>('');
-  const [permissionCamera, setPermissionCamera] = useState<CameraPermissionStatus |
-    CameraPermissionRequestResult | ''>('');
+  const [permissionCamera, setPermissionCamera] = useState<
+    CameraPermissionStatus | CameraPermissionRequestResult | ''
+  >('');
 
-    console.log('viewErrCamera', viewErrCamera);
-  
+  console.log('viewErrCamera', viewErrCamera);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -79,19 +78,19 @@ export function CameraView(propCamera: CameraType) {
     };
   }, []);
 
-    useEffect(() => {
-      let interval: any;
-      if (permissionCamera != 'authorized') {
-        checkCameraPermission()
-      } else {
-        interval = setTimeout(() => {
-          takePhotoAuto();
-        }, timeCapture);
-      }
-      return () => {
-        clearInterval(interval);
-      };
-    }, [permissionCamera, uriImage]);
+  useEffect(() => {
+    let interval: any;
+    if (permissionCamera != 'authorized') {
+      checkCameraPermission();
+    } else {
+      interval = setTimeout(() => {
+        takePhotoAuto();
+      }, timeCapture);
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [permissionCamera, uriImage]);
 
   useEffect(() => {
     if (uriImage) {
@@ -102,9 +101,10 @@ export function CameraView(propCamera: CameraType) {
         widthImageSize || 720,
         heightImageSize || 720,
         'PNG',
-        quality || 0.15, 
+        quality || 0.15,
         0,
-        undefined, false
+        undefined,
+        false
       )
         .then((response) => {
           // response.uri is the URI of the new image that can now be displayed, uploaded...
@@ -118,7 +118,6 @@ export function CameraView(propCamera: CameraType) {
           // Oops, something went wrong. Check that the filename is correct and
           // inspect err to get more details.
           console.log('error resize => ', err);
-
         });
     }
   }, [uriImage]);
@@ -132,58 +131,61 @@ export function CameraView(propCamera: CameraType) {
       setPermissionCamera(newCameraPermission);
     } else {
       setTimeout(() => {
-        takePhotoAuto()
+        takePhotoAuto();
       }, timeCapture);
     }
-  }
+  };
 
   /**
-   * 
+   *
    * @param uriImage image after resize
-   * @param nameFile 
+   * @param nameFile
    * @param timeCall the number of times the function to upload images was called
    */
-  const pushImage = async (uriImage: string, nameFile: string, timeCall: number) => {
+  const pushImage = async (
+    uriImage: string,
+    nameFile: string,
+    timeCall: number
+  ) => {
     var formData = new FormData();
-    formData.append("examId", examId);
-    formData.append("userId", userId);
-    formData.append("image", {
+    formData.append('examId', examId);
+    formData.append('userId', userId);
+    formData.append('image', {
       uri: uriImage,
-      type: "image/png",
+      type: 'image/png',
       name: nameFile,
     });
     try {
       let response = await axios({
-        method: "POST",
+        method: 'POST',
         url: urlSystem,
         headers: {
-          "Content-Type": "multipart/form-data",
-          "Accept": "application/json",
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
         },
         data: formData,
       });
       console.log('reponse api => ', response.data);
-
     } catch (e) {
       console.log('error => ', e);
       if (timeCall <= 3) {
         pushImage(uriImage, nameFile, timeCall + 1);
       } else {
-        logError(e)
+        logError(e);
       }
     }
-  }
+  };
 
   /**
    * log error when upload image error after 3 times
    */
   const logError = async (error: any) => {
-    console.log('error send => ', error)
+    console.log('error send => ', error);
     const body = {
       user_id: userId,
       exam_id: examId,
       message: error,
-    }
+    };
     try {
       let response = await axios({
         method: 'POST',
@@ -220,11 +222,21 @@ export function CameraView(propCamera: CameraType) {
     }
   };
 
-  if (device == null) return <>{viewErrCamera}</>;
+  if (device == null && permissionCamera === 'denied') {
+    return <>{viewErrCamera}</>;
+  } else if (
+    device == null &&
+    permissionCamera !== 'authorized' &&
+    permissionCamera !== 'denied'
+  ) {
+    return (
+      <ActivityIndicator size={'small'} color={'#175699'} animating={true} />
+    );
+  }
 
   return (
     <>
-      <Camera
+      {device && <Camera
         photo={true}
         ref={camera}
         style={[
@@ -236,7 +248,7 @@ export function CameraView(propCamera: CameraType) {
         ]}
         device={device}
         isActive={appStateVisible == 'active'}
-      />
+      />}
     </>
   );
 }
