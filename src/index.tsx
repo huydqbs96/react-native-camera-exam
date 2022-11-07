@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState, Component } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Platform, ViewStyle, AppState, ViewProps } from 'react-native';
+import { StyleSheet, Platform, ViewStyle, AppState } from 'react-native';
 import { 
   useCameraDevices, 
   Camera,
@@ -24,7 +24,7 @@ type CameraType = {
   timeCapture?: number; // timeout between each auto take picture
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
-  viewErrCamera?: Component<ViewProps, {}, any>
+  viewErrCamera?: JSX.Element
 };
 
 const isIOS: boolean = Platform.OS === "ios";
