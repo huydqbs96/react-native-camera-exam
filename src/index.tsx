@@ -224,7 +224,9 @@ export function CameraView(propCamera: CameraType) {
 
   return (
     <>
-      {device ? (
+      {permissionCamera !== 'authorized' || device == null ? (
+        viewErrCamera
+      ) : (
         <Camera
           photo={true}
           ref={camera}
@@ -238,8 +240,6 @@ export function CameraView(propCamera: CameraType) {
           device={device}
           isActive={appStateVisible == 'active'}
         />
-      ) : (
-        viewErrCamera
       )}
     </>
   );
