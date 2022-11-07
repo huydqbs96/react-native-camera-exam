@@ -212,26 +212,30 @@ export function CameraView(propCamera: CameraType) {
       }
     } catch (error) {
       setUriImage('');
-      console.warn('error when take photo => ', error); 
+      console.log('error when take photo => ', error); 
     }
   };
 
-  if (device == null) return <><Text>null camera</Text></>;
+  // if (device == null) return <><Text>null camera</Text></>;
 
   return (
-    <Camera
-      photo={true}
-      ref={camera}
-      style={[
-        style || styles.cameraView,
-        {
-          width: width || 60,
-          height: height || 60
-        }
-      ]}
-      device={device}
-      isActive={appStateVisible == 'active'}
-    />
+    <>
+      {device && permissionCamera &&  (
+        <Camera
+          photo={true}
+          ref={camera}
+          style={[
+            style || styles.cameraView,
+            {
+              width: width || 60,
+              height: height || 60,
+            },
+          ]}
+          device={device}
+          isActive={appStateVisible == 'active'}
+        />
+      )}
+    </>
   );
 }
 
