@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Platform, ViewStyle, AppState, Text, ViewComponent } from 'react-native';
+import { StyleSheet, Platform, ViewStyle, AppState, ViewComponent } from 'react-native';
 import { 
   useCameraDevices, 
   Camera,
