@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Platform, ViewStyle, AppState } from 'react-native';
+import { StyleSheet, Platform, ViewStyle, AppState, View } from 'react-native';
 import { 
   useCameraDevices, 
   Camera,
@@ -220,7 +220,7 @@ export function CameraView(propCamera: CameraType) {
     }
   };
 
-  if (device == null) return <>viewErrCamera</>;
+  if (device == null) return <>{viewErrCamera}</>;
 
   return (
     <>
