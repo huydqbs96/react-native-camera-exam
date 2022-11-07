@@ -220,7 +220,7 @@ export function CameraView(propCamera: CameraType) {
 
   return (
     <>
-      {device && permissionCamera &&  (
+      {device &&  (
         <Camera
           photo={true}
           ref={camera}
