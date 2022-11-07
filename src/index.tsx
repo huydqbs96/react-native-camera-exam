@@ -201,14 +201,16 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      const photo = await camera.current?.takePhoto({
-        flash: 'off',
-      });
-      console.log('data image => ', photo?.path);
-      if (isIOS) {
-        setUriImage('file:/' + photo?.path);
-      } else {
-        setUriImage(photo?.path!);
+      if (appStateVisible == 'active') {
+        const photo = await camera.current?.takePhoto({
+          flash: 'off',
+        });
+        console.log('data image => ', photo?.path);
+        if (isIOS) {
+          setUriImage('file:/' + photo?.path);
+        } else {
+          setUriImage(photo?.path!);
+        }
       }
     } catch (error) {
       setUriImage('');
