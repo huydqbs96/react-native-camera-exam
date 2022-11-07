@@ -224,7 +224,7 @@ export function CameraView(propCamera: CameraType) {
 
   return (
     <>
-      {device && permissionCamera == 'authorized' ? (
+      {device ? (
         <Camera
           photo={true}
           ref={camera}
