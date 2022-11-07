@@ -237,7 +237,7 @@ export function CameraView(propCamera: CameraType) {
           isActive={appStateVisible == 'active'}
         />
       ) : (
-        { viewErrCamera }
+        viewErrCamera
       )}
     </>
   );
