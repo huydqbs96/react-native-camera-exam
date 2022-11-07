@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, Component } from 'react';
 
-import { StyleSheet, Platform, ViewStyle, AppState, ViewComponent } from 'react-native';
+import { StyleSheet, Platform, ViewStyle, AppState, ViewComponent, ViewProps } from 'react-native';
 import { 
   useCameraDevices, 
   Camera,
@@ -24,7 +24,7 @@ type CameraType = {
   timeCapture?: number; // timeout between each auto take picture
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
-  viewErrCamera?: ViewComponent
+  viewErrCamera?: Component<ViewProps, {}, any>
 };
 
 const isIOS: boolean = Platform.OS === "ios";
@@ -237,7 +237,7 @@ export function CameraView(propCamera: CameraType) {
           isActive={appStateVisible == 'active'}
         />
       ) : (
-        viewErrCamera
+        { viewErrCamera }
       )}
     </>
   );
