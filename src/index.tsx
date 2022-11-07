@@ -31,7 +31,6 @@ type CameraType = {
   timeCapture?: number; // timeout between each auto take picture
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
-  viewErrCamera: JSX.Element; // show view notification when camera null
 };
 
 const isIOS: boolean = Platform.OS === 'ios';
@@ -49,7 +48,6 @@ export function CameraView(propCamera: CameraType) {
     timeCapture = 30000,
     widthImageSize,
     heightImageSize,
-    viewErrCamera,
   } = propCamera;
 
   console.log('props Camera => ', propCamera);
@@ -227,38 +225,27 @@ export function CameraView(propCamera: CameraType) {
     }
   };
 
-  if (device == null && permissionCamera === 'denied') {
-    return <>{viewErrCamera}</>;
-  } else if (
-    device == null &&
-    permissionCamera !== 'authorized' &&
-    permissionCamera !== 'denied'
-  ) {
+  if (device == null)
     return (
       <SafeAreaView style={styles.container}>
         <ActivityIndicator size={'large'} color={'#175699'} animating={true} />
       </SafeAreaView>
     );
-  }
 
   return (
-    <>
-      {device != null && permissionCamera === 'authorized' && (
-        <Camera
-          photo={true}
-          ref={camera}
-          style={[
-            style || styles.cameraView,
-            {
-              width: width || 60,
-              height: height || 60,
-            },
-          ]}
-          device={device}
-          isActive={appStateVisible == 'active'}
-        />
-      )}
-    </>
+    <Camera
+      photo={true}
+      ref={camera}
+      style={[
+        style || styles.cameraView,
+        {
+          width: width || 60,
+          height: height || 60,
+        },
+      ]}
+      device={device}
+      isActive={appStateVisible == 'active'}
+    />
   );
 }
 
