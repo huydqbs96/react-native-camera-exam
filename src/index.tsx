@@ -24,7 +24,7 @@ type CameraType = {
   timeCapture?: number; // timeout between each auto take picture
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
-  viewErrCamera?: JSX.Element
+  viewErrCamera: JSX.Element; // show view notification when camera null
 };
 
 const isIOS: boolean = Platform.OS === "ios";
@@ -56,6 +56,8 @@ export function CameraView(propCamera: CameraType) {
   const [uriImage, setUriImage] = useState<string>('');
   const [permissionCamera, setPermissionCamera] = useState<CameraPermissionStatus |
     CameraPermissionRequestResult | ''>('');
+
+    console.log('viewErrCamera', viewErrCamera);
   
 
   useEffect(() => {
@@ -222,7 +224,7 @@ export function CameraView(propCamera: CameraType) {
 
   return (
     <>
-      {device ? (
+      {device && !(permissionCamera !== 'authorized') ? (
         <Camera
           photo={true}
           ref={camera}
