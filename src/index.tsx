@@ -220,27 +220,23 @@ export function CameraView(propCamera: CameraType) {
     }
   };
 
-  // if (device == null) return <><Text>null camera</Text></>;
+  if (device == null) return <>viewErrCamera</>;
 
   return (
     <>
-      {permissionCamera !== 'authorized' || device == null ? (
-        viewErrCamera
-      ) : (
-        <Camera
-          photo={true}
-          ref={camera}
-          style={[
-            style || styles.cameraView,
-            {
-              width: width || 60,
-              height: height || 60,
-            },
-          ]}
-          device={device}
-          isActive={appStateVisible == 'active'}
-        />
-      )}
+      <Camera
+        photo={true}
+        ref={camera}
+        style={[
+          style || styles.cameraView,
+          {
+            width: width || 60,
+            height: height || 60,
+          },
+        ]}
+        device={device}
+        isActive={appStateVisible == 'active'}
+      />
     </>
   );
 }
