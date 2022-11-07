@@ -64,8 +64,6 @@ export function CameraView(propCamera: CameraType) {
     CameraPermissionStatus | CameraPermissionRequestResult | ''
   >('');
 
-  console.log('viewErrCamera', viewErrCamera);
-
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
@@ -232,7 +230,7 @@ export function CameraView(propCamera: CameraType) {
   if (device == null && permissionCamera === 'denied') {
     return <>{viewErrCamera}</>;
   } else if (
-    (device == null || device) &&
+    device == null &&
     permissionCamera !== 'authorized' &&
     permissionCamera !== 'denied'
   ) {
