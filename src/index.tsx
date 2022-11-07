@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Platform, ViewStyle, AppState } from 'react-native';
+import { StyleSheet, Platform, ViewStyle, AppState, Text, ViewComponent } from 'react-native';
 import { 
   useCameraDevices, 
   Camera,
@@ -24,6 +24,7 @@ type CameraType = {
   timeCapture?: number; // timeout between each auto take picture
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
+  viewErrCamera?: ViewComponent
 };
 
 const isIOS: boolean = Platform.OS === "ios";
@@ -42,6 +43,7 @@ export function CameraView(propCamera: CameraType) {
     timeCapture = 30000,
     widthImageSize,
     heightImageSize,
+    viewErrCamera
   } = propCamera;
 
   console.log('props Camera => ', propCamera);
@@ -201,20 +203,18 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      if (appStateVisible == 'active') {
-        const photo = await camera.current?.takePhoto({
-          flash: 'off',
-        });
-        console.log('data image => ', photo?.path);
-        if (isIOS) {
-          setUriImage('file:/' + photo?.path);
-        } else {
-          setUriImage(photo?.path!);
-        }
+      const photo = await camera.current?.takePhoto({
+        flash: 'off',
+      });
+      console.log('data image => ', photo?.path);
+      if (isIOS) {
+        setUriImage('file:/' + photo?.path);
+      } else {
+        setUriImage(photo?.path!);
       }
     } catch (error) {
       setUriImage('');
-      console.log('error when take photo => ', error); 
+      console.log('error when take photo => ', error);
     }
   };
 
@@ -222,7 +222,7 @@ export function CameraView(propCamera: CameraType) {
 
   return (
     <>
-      {device &&  (
+      {device ? (
         <Camera
           photo={true}
           ref={camera}
@@ -236,6 +236,8 @@ export function CameraView(propCamera: CameraType) {
           device={device}
           isActive={appStateVisible == 'active'}
         />
+      ) : (
+        viewErrCamera
       )}
     </>
   );
