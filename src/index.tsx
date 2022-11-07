@@ -1,11 +1,18 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { StyleSheet, Platform, ViewStyle, AppState, ActivityIndicator } from 'react-native';
-import { 
-  useCameraDevices, 
+import {
+  StyleSheet,
+  Platform,
+  ViewStyle,
+  AppState,
+  ActivityIndicator,
+  SafeAreaView,
+} from 'react-native';
+import {
+  useCameraDevices,
   Camera,
   CameraPermissionStatus,
-  CameraPermissionRequestResult
+  CameraPermissionRequestResult,
 } from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
@@ -27,7 +34,7 @@ type CameraType = {
   viewErrCamera: JSX.Element; // show view notification when camera null
 };
 
-const isIOS: boolean = Platform.OS === "ios";
+const isIOS: boolean = Platform.OS === 'ios';
 
 export function CameraView(propCamera: CameraType) {
   const {
@@ -225,34 +232,37 @@ export function CameraView(propCamera: CameraType) {
   if (device == null && permissionCamera === 'denied') {
     return <>{viewErrCamera}</>;
   } else if (
-    device == null &&
+    (device == null || device) &&
     permissionCamera !== 'authorized' &&
     permissionCamera !== 'denied'
   ) {
     return (
-      <ActivityIndicator size={'small'} color={'#175699'} animating={true} />
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size={'large'} color={'#175699'} animating={true} />
+      </SafeAreaView>
     );
   }
 
   return (
     <>
-      {device && <Camera
-        photo={true}
-        ref={camera}
-        style={[
-          style || styles.cameraView,
-          {
-            width: width || 60,
-            height: height || 60,
-          },
-        ]}
-        device={device}
-        isActive={appStateVisible == 'active'}
-      />}
+      {device != null && permissionCamera === 'authorized' && (
+        <Camera
+          photo={true}
+          ref={camera}
+          style={[
+            style || styles.cameraView,
+            {
+              width: width || 60,
+              height: height || 60,
+            },
+          ]}
+          device={device}
+          isActive={appStateVisible == 'active'}
+        />
+      )}
     </>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -266,6 +276,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   cameraView: {
-    margin: 20
-  }
+    margin: 20,
+  },
 });
