@@ -104,10 +104,7 @@ export function CameraView(propCamera: CameraType) {
       (uriImage != null || uriImage != '') && !uriImage.includes('undefined')
     );
     console.log('condition2 => ', uriImage && !uriImage.includes('undefined'));
-    if (
-      (uriImage != null || uriImage != '') &&
-      !uriImage.includes('undefined')
-    ) {
+    if (uriImage != null && uriImage != '' && !uriImage.includes('undefined')) {
       console.log('uri => ', uriImage);
 
       ImageResizer.createResizedImage(
