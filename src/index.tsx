@@ -96,7 +96,6 @@ export function CameraView(propCamera: CameraType) {
   }, [permissionCamera, uriImage]);
 
   useEffect(() => {
-    console.log('condition', uriImage != null && uriImage.match('undefined')?.length == 0);
     if (uriImage != null && uriImage.match('undefined')?.length == 0) {
       console.log('uri => ', uriImage);
 
@@ -124,8 +123,6 @@ export function CameraView(propCamera: CameraType) {
           setUriImage('');
           console.log('error resize => ', err);
         });
-    } else {
-      setUriImage('');
     }
   }, [uriImage]);
 
