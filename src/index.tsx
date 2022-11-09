@@ -97,7 +97,7 @@ export function CameraView(propCamera: CameraType) {
 
   useEffect(() => {
     console.log('condition', uriImage != null && uriImage.match('undefined')?.length == 0);
-    if (uriImage != null && uriImage.match('undefined')?.length != 0) {
+    if (uriImage != null && uriImage.match('undefined')?.length == 0) {
       console.log('uri => ', uriImage);
 
       ImageResizer.createResizedImage(
