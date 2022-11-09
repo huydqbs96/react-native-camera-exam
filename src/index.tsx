@@ -96,6 +96,11 @@ export function CameraView(propCamera: CameraType) {
   }, [permissionCamera, uriImage]);
 
   useEffect(() => {
+    console.log(
+      'condition => ',
+      uriImage !=
+        null + ' ---- ' + `${uriImage.match('undefined')?.length == 0}`
+    );
     if (uriImage != null && uriImage.match('undefined')?.length == 0) {
       console.log('uri => ', uriImage);
 
@@ -211,7 +216,10 @@ export function CameraView(propCamera: CameraType) {
    * take photo auto after 1 specified time
    */
   const takePhotoAuto = async () => {
-    console.log('check camera active', camera.current?.takePhoto);
+    console.log(
+      'check camera active',
+      JSON.stringify(camera.current?.takePhoto)
+    );
     try {
       const photo = await camera.current?.takePhoto({
         flash: 'off',
