@@ -16,6 +16,7 @@ import {
 } from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
+import ViewShot, { captureRef } from 'react-native-view-shot';
 
 type CameraType = {
   width?: number; // camera view width size
@@ -56,6 +57,7 @@ export function CameraView(propCamera: CameraType) {
   const devices = useCameraDevices();
   const camera = useRef<Camera>(null);
   const device = devices.front;
+  const viewShot = useRef<ViewShot>(null);
 
   const [uriImage, setUriImage] = useState<string>('');
   const [permissionCamera, setPermissionCamera] = useState<
@@ -98,10 +100,14 @@ export function CameraView(propCamera: CameraType) {
   useEffect(() => {
     console.log(
       'condition => ',
-      uriImage !=
-        null + ' ---- ' + `${uriImage.includes('undefined')}`
+      (uriImage != null || uriImage != '') +
+        ' ---- ' +
+        `${uriImage.includes('undefined')}`
     );
-    if (uriImage != null && !uriImage.includes('undefined')) {
+    if (
+      (uriImage != null || uriImage != '') &&
+      !uriImage.includes('undefined')
+    ) {
       console.log('uri => ', uriImage);
 
       ImageResizer.createResizedImage(
@@ -217,15 +223,26 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      const photo = await camera.current?.takePhoto({
-        flash: 'off',
+      // const photo = await camera.current?.takePhoto({
+      //   flash: 'off',
+      // });
+      // console.log('data image => ', photo?.path);
+      // if (isIOS) {
+      //   setUriImage('file:/' + photo?.path);
+      // } else {
+      //   setUriImage(photo?.path!);
+      // }
+      captureRef(viewShot, {
+        format: 'jpg',
+        snapshotContentContainer: true,
+      }).then((uri) => {
+        console.log('uri view shot', uri);
+        if (isIOS) {
+          setUriImage('file:/' + uri);
+        } else {
+          setUriImage(uri);
+        }
       });
-      console.log('data image => ', photo?.path);
-      if (isIOS) {
-        setUriImage('file:/' + photo?.path);
-      } else {
-        setUriImage(photo?.path!);
-      }
     } catch (error) {
       setUriImage('');
       console.log('error when take photo => ', error);
@@ -240,19 +257,21 @@ export function CameraView(propCamera: CameraType) {
     );
 
   return (
-    <Camera
-      photo={true}
-      ref={camera}
-      style={[
-        style || styles.cameraView,
-        {
-          width: width || 60,
-          height: height || 60,
-        },
-      ]}
-      device={device}
-      isActive={appStateVisible == 'active'}
-    />
+    <ViewShot ref={viewShot} style={styles.container}>
+      <Camera
+        photo={true}
+        ref={camera}
+        style={[
+          style || styles.cameraView,
+          {
+            width: width || 60,
+            height: height || 60,
+          },
+        ]}
+        device={device}
+        isActive={appStateVisible == 'active'}
+      />
+    </ViewShot>
   );
 }
 

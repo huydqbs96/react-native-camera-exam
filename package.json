@@ -71,11 +71,12 @@
     "@types/react": "17.0.21"
   },
   "peerDependencies": {
+    "@bam.tech/react-native-image-resizer": "^3.0.3",
+    "axios": "0.27.2",
     "react": "*",
     "react-native": "*",
     "react-native-vision-camera": "*",
-    "axios": "0.27.2",
-    "@bam.tech/react-native-image-resizer": "^3.0.3"
+    "react-native-view-shot": "*"
   },
   "jest": {
     "preset": "react-native",
@@ -153,7 +154,8 @@
   },
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.3",
-    "react-native-vision-camera": "^2.14.1",
-    "axios": "0.27.2"
+    "axios": "0.27.2",
+    "react-native-create-thumbnail": "^1.6.3",
+    "react-native-vision-camera": "*"
   }
 }
