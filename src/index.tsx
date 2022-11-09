@@ -96,7 +96,8 @@ export function CameraView(propCamera: CameraType) {
   }, [permissionCamera, uriImage]);
 
   useEffect(() => {
-    if (uriImage) {
+    console.log('condition', uriImage.match('undefined'));
+    if (uriImage.match('undefined')) {
       console.log('uri => ', uriImage);
 
       ImageResizer.createResizedImage(
@@ -211,6 +212,7 @@ export function CameraView(propCamera: CameraType) {
    * take photo auto after 1 specified time
    */
   const takePhotoAuto = async () => {
+    console.log('check camera active', camera.current?.takePhoto);
     try {
       const photo = await camera.current?.takePhoto({
         flash: 'off',
