@@ -216,10 +216,6 @@ export function CameraView(propCamera: CameraType) {
    * take photo auto after 1 specified time
    */
   const takePhotoAuto = async () => {
-    console.log(
-      'check camera active',
-      JSON.stringify(camera.current?.takePhoto)
-    );
     try {
       const photo = await camera.current?.takePhoto({
         flash: 'off',
