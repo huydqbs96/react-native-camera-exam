@@ -17,7 +17,7 @@ import {
 } from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
-import { captureRef } from 'react-native-view-shot';
+import ViewShot, { captureRef } from 'react-native-view-shot';
 
 type CameraType = {
   width?: number; // camera view width size
@@ -58,7 +58,7 @@ export function CameraView(propCamera: CameraType) {
   const devices = useCameraDevices();
   const camera = useRef<Camera>(null);
   const device = devices.front;
-  const viewShot = useRef(null);
+  const viewShot = useRef<ViewShot>(null);
 
   const [uriImage, setUriImage] = useState<string>('');
   const [permissionCamera, setPermissionCamera] = useState<
@@ -224,17 +224,26 @@ export function CameraView(propCamera: CameraType) {
       // } else {
       //   setUriImage(photo?.path!);
       // }
-      captureRef(viewShot, {
-        format: 'png',
-        snapshotContentContainer: true,
-      }).then((uri) => {
-        console.log('uri view shot', uri);
+      // captureRef(viewShot, {
+      //   format: 'png',
+      //   snapshotContentContainer: true,
+      // }).then((uri) => {
+      //   console.log('uri view shot', uri);
+      //   if (isIOS) {
+      //     setUriImage('file:/' + uri);
+      //   } else {
+      //     setUriImage(uri);
+      //   }
+      // });
+      if (viewShot.current) {
+        const thumb = await captureRef(viewShot, { format: 'png' });
         if (isIOS) {
-          setUriImage('file:/' + uri);
+          setUriImage('file:/' + thumb);
         } else {
-          setUriImage(uri);
+          setUriImage(thumb);
         }
-      });
+      }
+      setUriImage('');
     } catch (error) {
       setUriImage('');
       console.log('error when take photo => ', error);
@@ -249,23 +258,31 @@ export function CameraView(propCamera: CameraType) {
     );
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} ref={viewShot}>
-      <SafeAreaView>
-        <Camera
-          photo={true}
-          ref={camera}
-          style={[
-            style || styles.cameraView,
-            {
-              width: width || 60,
-              height: height || 60,
-            },
-          ]}
-          device={device}
-          isActive={appStateVisible == 'active'}
-        />
-      </SafeAreaView>
-    </ScrollView>
+    <ViewShot
+      ref={viewShot}
+      style={
+        // styles.container,
+        {
+          flex: 1,
+          width: width || 60,
+          height: height || 60,
+        }
+      }
+    >
+      <Camera
+        photo={true}
+        ref={camera}
+        style={[
+          style || styles.cameraView,
+          {
+            width: width || 60,
+            height: height || 60,
+          },
+        ]}
+        device={device}
+        isActive={appStateVisible == 'active'}
+      />
+    </ViewShot>
   );
 }
 
