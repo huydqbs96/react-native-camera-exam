@@ -255,7 +255,7 @@ export function CameraView(propCamera: CameraType) {
     );
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollview}>
       <SafeAreaView>
         <ViewShot ref={viewShot} style={styles.container}>
           <Camera
@@ -278,6 +278,9 @@ export function CameraView(propCamera: CameraType) {
 }
 
 const styles = StyleSheet.create({
+  scrollview: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
