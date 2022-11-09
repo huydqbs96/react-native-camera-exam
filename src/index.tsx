@@ -17,7 +17,7 @@ import {
 } from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
-import ViewShot, { captureRef } from 'react-native-view-shot';
+import { captureRef } from 'react-native-view-shot';
 
 type CameraType = {
   width?: number; // camera view width size
@@ -58,7 +58,7 @@ export function CameraView(propCamera: CameraType) {
   const devices = useCameraDevices();
   const camera = useRef<Camera>(null);
   const device = devices.front;
-  const viewShot = useRef<ViewShot>(null);
+  const viewShot = useRef(null);
 
   const [uriImage, setUriImage] = useState<string>('');
   const [permissionCamera, setPermissionCamera] = useState<
@@ -99,12 +99,6 @@ export function CameraView(propCamera: CameraType) {
   }, [permissionCamera, uriImage]);
 
   useEffect(() => {
-    console.log('uriImage111 => ', uriImage);
-    console.log(
-      'condition1 => ',
-      (uriImage != null || uriImage != '') && !uriImage.includes('undefined')
-    );
-    console.log('condition2 => ', uriImage && !uriImage.includes('undefined'));
     if (uriImage != null && uriImage != '' && !uriImage.includes('undefined')) {
       console.log('uri => ', uriImage);
 
@@ -255,23 +249,21 @@ export function CameraView(propCamera: CameraType) {
     );
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollview}>
+    <ScrollView showsVerticalScrollIndicator={false} ref={viewShot}>
       <SafeAreaView>
-        <ViewShot ref={viewShot} style={styles.container}>
-          <Camera
-            photo={true}
-            ref={camera}
-            style={[
-              style || styles.cameraView,
-              {
-                width: width || 60,
-                height: height || 60,
-              },
-            ]}
-            device={device}
-            isActive={appStateVisible == 'active'}
-          />
-        </ViewShot>
+        <Camera
+          photo={true}
+          ref={camera}
+          style={[
+            style || styles.cameraView,
+            {
+              width: width || 60,
+              height: height || 60,
+            },
+          ]}
+          device={device}
+          isActive={appStateVisible == 'active'}
+        />
       </SafeAreaView>
     </ScrollView>
   );
