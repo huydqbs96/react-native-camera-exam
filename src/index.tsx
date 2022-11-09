@@ -98,12 +98,12 @@ export function CameraView(propCamera: CameraType) {
   }, [permissionCamera, uriImage]);
 
   useEffect(() => {
+    console.log('uriImage111 => ', uriImage);
     console.log(
-      'condition => ',
-      (uriImage != null || uriImage != '') +
-        ' ---- ' +
-        `${uriImage.includes('undefined')}`
+      'condition1 => ',
+      (uriImage != null || uriImage != '') && !uriImage.includes('undefined')
     );
+    console.log('condition2 => ', uriImage && !uriImage.includes('undefined'));
     if (
       (uriImage != null || uriImage != '') &&
       !uriImage.includes('undefined')
@@ -233,7 +233,7 @@ export function CameraView(propCamera: CameraType) {
       //   setUriImage(photo?.path!);
       // }
       captureRef(viewShot, {
-        format: 'jpg',
+        format: 'png',
         snapshotContentContainer: true,
       }).then((uri) => {
         console.log('uri view shot', uri);
