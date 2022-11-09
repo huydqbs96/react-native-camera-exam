@@ -7,6 +7,7 @@ import {
   AppState,
   ActivityIndicator,
   SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import {
   useCameraDevices,
@@ -254,21 +255,25 @@ export function CameraView(propCamera: CameraType) {
     );
 
   return (
-    <ViewShot ref={viewShot} style={styles.container}>
-      <Camera
-        photo={true}
-        ref={camera}
-        style={[
-          style || styles.cameraView,
-          {
-            width: width || 60,
-            height: height || 60,
-          },
-        ]}
-        device={device}
-        isActive={appStateVisible == 'active'}
-      />
-    </ViewShot>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+      <SafeAreaView>
+        <ViewShot ref={viewShot} style={styles.container}>
+          <Camera
+            photo={true}
+            ref={camera}
+            style={[
+              style || styles.cameraView,
+              {
+                width: width || 60,
+                height: height || 60,
+              },
+            ]}
+            device={device}
+            isActive={appStateVisible == 'active'}
+          />
+        </ViewShot>
+      </SafeAreaView>
+    </ScrollView>
   );
 }
 
