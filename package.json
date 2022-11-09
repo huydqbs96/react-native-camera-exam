@@ -75,8 +75,8 @@
     "axios": "0.27.2",
     "react": "*",
     "react-native": "*",
-    "react-native-vision-camera": "*",
-    "react-native-view-shot": "*"
+    "react-native-view-shot": "^3.5.0",
+    "react-native-vision-camera": "*"
   },
   "jest": {
     "preset": "react-native",
@@ -155,7 +155,7 @@
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.3",
     "axios": "0.27.2",
-    "react-native-create-thumbnail": "^1.6.3",
-    "react-native-vision-camera": "*"
+    "react-native-vision-camera": "*",
+    "react-native-view-shot": "*"
   }
 }
