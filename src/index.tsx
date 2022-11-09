@@ -120,6 +120,7 @@ export function CameraView(propCamera: CameraType) {
         .catch((err) => {
           // Oops, something went wrong. Check that the filename is correct and
           // inspect err to get more details.
+          setUriImage('');
           console.log('error resize => ', err);
         });
     }
@@ -183,6 +184,7 @@ export function CameraView(propCamera: CameraType) {
    * log error when upload image error after 3 times
    */
   const logError = async (error: any) => {
+    setUriImage('');
     console.log('error send => ', error);
     const body = {
       user_id: userId,
