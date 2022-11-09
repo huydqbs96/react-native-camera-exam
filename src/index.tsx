@@ -7,7 +7,6 @@ import {
   AppState,
   ActivityIndicator,
   SafeAreaView,
-  ScrollView,
 } from 'react-native';
 import {
   useCameraDevices,
