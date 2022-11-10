@@ -16,7 +16,6 @@ import {
 } from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
-import ViewShot, { captureRef } from 'react-native-view-shot';
 
 type CameraType = {
   width?: number; // camera view width size
@@ -57,7 +56,6 @@ export function CameraView(propCamera: CameraType) {
   const devices = useCameraDevices();
   const camera = useRef<Camera>(null);
   const device = devices.front;
-  const viewShot = useRef<ViewShot>(null);
 
   const [uriImage, setUriImage] = useState<string>('');
   const [permissionCamera, setPermissionCamera] = useState<
@@ -214,33 +212,14 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      // const photo = await camera.current?.takePhoto({
-      //   flash: 'off',
-      // });
-      // console.log('data image => ', photo?.path);
-      // if (isIOS) {
-      //   setUriImage('file:/' + photo?.path);
-      // } else {
-      //   setUriImage(photo?.path!);
-      // }
-      // captureRef(viewShot, {
-      //   format: 'png',
-      //   snapshotContentContainer: true,
-      // }).then((uri) => {
-      //   console.log('uri view shot', uri);
-      //   if (isIOS) {
-      //     setUriImage('file:/' + uri);
-      //   } else {
-      //     setUriImage(uri);
-      //   }
-      // });
-      if (viewShot.current) {
-        const thumb = await captureRef(viewShot, { format: 'png' });
-        if (isIOS) {
-          setUriImage('file:/' + thumb);
-        } else {
-          setUriImage(thumb);
-        }
+      const photo = await camera.current?.takePhoto({
+        flash: 'off',
+      });
+      console.log('data image => ', photo?.path);
+      if (isIOS) {
+        setUriImage('file:/' + photo?.path);
+      } else {
+        setUriImage(photo?.path!);
       }
     } catch (error) {
       setUriImage('');
@@ -256,40 +235,23 @@ export function CameraView(propCamera: CameraType) {
     );
 
   return (
-    <ViewShot
-      ref={viewShot}
-      style={
-        // styles.container,
+    <Camera
+      photo={true}
+      ref={camera}
+      style={[
+        style || styles.cameraView,
         {
-          flex: 1,
           width: width || 60,
           height: height || 60,
-          borderWidth: 1, 
-          borderColor: 'red'
-        }
-      }
-    >
-      <Camera
-        photo={true}
-        ref={camera}
-        style={[
-          style || styles.cameraView,
-          {
-            width: width || 60,
-            height: height || 60,
-          },
-        ]}
-        device={device}
-        isActive={appStateVisible == 'active'}
-      />
-    </ViewShot>
+        },
+      ]}
+      device={device}
+      isActive={appStateVisible == 'active'}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  scrollview: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     alignItems: 'center',
