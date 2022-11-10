@@ -242,7 +242,6 @@ export function CameraView(propCamera: CameraType) {
           setUriImage(thumb);
         }
       }
-      setUriImage('');
     } catch (error) {
       setUriImage('');
       console.log('error when take photo => ', error);
@@ -265,6 +264,8 @@ export function CameraView(propCamera: CameraType) {
           flex: 1,
           width: width || 60,
           height: height || 60,
+          borderWidth: 1, 
+          borderColor: 'red'
         }
       }
     >
