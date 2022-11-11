@@ -75,9 +75,9 @@
     "axios": "0.27.2",
     "react": "*",
     "react-native": "*",
-    "react-native-vision-camera": "*",
     "react-native-view-shot": "*",
-    "react-native-webrtc": "*"
+    "react-native-webrtc": "*",
+    "react-native-permissions": "*"
   },
   "jest": {
     "preset": "react-native",
@@ -156,8 +156,8 @@
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.3",
     "axios": "0.27.2",
-    "react-native-view-shot": "^3.5.0",
-    "react-native-vision-camera": "*",
-    "react-native-webrtc": "^106.0.0-beta.6"
+    "react-native-permissions": "^3.6.1",
+    "react-native-view-shot": "*",
+    "react-native-webrtc": "*"
   }
 }

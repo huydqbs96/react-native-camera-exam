@@ -8,17 +8,19 @@ import {
   AppState,
   ActivityIndicator,
   SafeAreaView,
+  Alert,
+  Linking,
 } from 'react-native';
-import {
-  useCameraDevices,
-  Camera,
-  CameraPermissionStatus,
-  CameraPermissionRequestResult,
-} from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
 import { mediaDevices, MediaStream, RTCView } from 'react-native-webrtc';
 import ViewShot from 'react-native-view-shot';
+import RNPermissions, {
+  check,
+  PERMISSIONS,
+  PermissionStatus,
+  RESULTS,
+} from 'react-native-permissions';
 
 type CameraType = {
   width?: number; // camera view width size
@@ -59,9 +61,9 @@ export function CameraView(propCamera: CameraType) {
   const viewShot = useRef(null);
 
   const [uriImage, setUriImage] = useState<string>('');
-  const [permissionCamera, setPermissionCamera] = useState<
-    CameraPermissionStatus | CameraPermissionRequestResult | ''
-  >('');
+  const [permissionCamera, setPermissionCamera] = useState<PermissionStatus>();
+  let interval = useRef<any>();
+
   const [stream, setStream] = useState<MediaStream>();
 
   useEffect(() => {
@@ -84,16 +86,17 @@ export function CameraView(propCamera: CameraType) {
   }, []);
 
   useEffect(() => {
-    let interval: any;
-    if (permissionCamera != 'authorized') {
-      checkCameraPermission();
-    } else {
-      interval = setTimeout(() => {
-        takePhotoAuto();
-      }, timeCapture);
-    }
+    // if (permissionCamera != 'authorized') {
+    checkCameraPermission();
+    // } else {
+    //   interval = setTimeout(() => {
+    //     takePhotoAuto();
+    //   }, timeCapture);
+    // }
     return () => {
-      clearInterval(interval);
+      if (interval.current != null) {
+        clearInterval(interval.current);
+      }
     };
   }, [permissionCamera, uriImage]);
 
@@ -150,6 +153,7 @@ export function CameraView(propCamera: CameraType) {
       try {
         s = await mediaDevices.getUserMedia({
           video: true,
+          videoType: 'front',
         });
         setStream(s);
       } catch (e) {
@@ -159,16 +163,99 @@ export function CameraView(propCamera: CameraType) {
   };
 
   const checkCameraPermission = async () => {
-    const cameraPermission = await Camera.getCameraPermissionStatus();
-    console.log('permission => ', cameraPermission);
-
-    if (cameraPermission != 'authorized') {
-      const newCameraPermission = await Camera.requestCameraPermission();
-      setPermissionCamera(newCameraPermission);
+    if (Platform.OS == 'android') {
+      RNPermissions.request(PERMISSIONS.ANDROID.CAMERA)
+        .then((statuses) => {
+          if (statuses === RESULTS.GRANTED) {
+            setPermissionCamera(statuses);
+            interval.current = setTimeout(() => {
+              takePhotoAuto();
+            }, timeCapture);
+          } else {
+            setPermissionCamera(statuses);
+            Alert.alert('', 'no permission camera', [
+              {
+                text: 'OK',
+                onPress: () => {
+                  Linking.openURL('app-settings:');
+                },
+              },
+              {
+                text: 'Cancel',
+                onPress: () => {
+                  console.log('dismis alert');
+                },
+              },
+            ]);
+          }
+        })
+        .catch((e) => console.log(e.message));
     } else {
-      setTimeout(() => {
-        takePhotoAuto();
-      }, timeCapture);
+      RNPermissions.request(PERMISSIONS.IOS.CAMERA)
+        .then((result) => {
+          switch (result) {
+            case RESULTS.UNAVAILABLE:
+              console.log(
+                'This feature is not available (on this device / in this context)'
+              );
+              setPermissionCamera(result);
+              break;
+            case RESULTS.DENIED:
+              console.log(
+                'The permission has not been requested / is denied but requestable'
+              );
+              RNPermissions.request(PERMISSIONS.IOS.CAMERA)
+                .then((result) => {
+                  switch (result) {
+                    case RESULTS.UNAVAILABLE:
+                      break;
+                    case RESULTS.DENIED:
+                      break;
+                    case RESULTS.GRANTED:
+                      setPermissionCamera(result);
+                      interval.current = setTimeout(() => {
+                        takePhotoAuto();
+                      }, timeCapture);
+                      break;
+                    case RESULTS.LIMITED:
+                      //show dialog notify cant create album download
+                      break;
+                    case RESULTS.BLOCKED:
+                      setPermissionCamera(result);
+                      break;
+                  }
+                })
+                .catch((e) => console.log(e.message));
+              break;
+            case RESULTS.GRANTED:
+              console.log('The permission is granted');
+              setPermissionCamera(result);
+              interval.current = setTimeout(() => {
+                takePhotoAuto();
+              }, timeCapture);
+              break;
+            case RESULTS.BLOCKED:
+              console.log(
+                'The permission is denied and not requestable anymore'
+              );
+              Alert.alert('', 'no permission camera', [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    Linking.openURL('app-settings:');
+                  },
+                },
+                {
+                  text: 'Cancel',
+                  onPress: () => {
+                    console.log('dismis alert');
+                  },
+                },
+              ]);
+              break;
+          }
+        })
+        .catch((e) => console.log(e.message));
     }
   };
 
@@ -272,7 +359,6 @@ export function CameraView(propCamera: CameraType) {
     );
   };
 
-  
   return (
     <ViewShot
       ref={viewShot}
