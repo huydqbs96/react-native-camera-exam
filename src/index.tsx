@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useRef, useEffect, useState } from 'react';
 
 import {
@@ -16,6 +17,8 @@ import {
 } from 'react-native-vision-camera';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
+import { mediaDevices, MediaStream, RTCView } from 'react-native-webrtc';
+import ViewShot from 'react-native-view-shot';
 
 type CameraType = {
   width?: number; // camera view width size
@@ -53,14 +56,13 @@ export function CameraView(propCamera: CameraType) {
   console.log('props Camera => ', propCamera);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const devices = useCameraDevices();
-  const camera = useRef<Camera>(null);
-  const device = devices.front;
+  const viewShot = useRef(null);
 
   const [uriImage, setUriImage] = useState<string>('');
   const [permissionCamera, setPermissionCamera] = useState<
     CameraPermissionStatus | CameraPermissionRequestResult | ''
   >('');
+  const [stream, setStream] = useState<MediaStream>();
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -125,6 +127,36 @@ export function CameraView(propCamera: CameraType) {
         });
     }
   }, [uriImage]);
+
+  useEffect(() => {
+    startStreamLocal();
+    return () => {
+      stopStreamLocal();
+    };
+  }, [stream]);
+
+  const stopStreamLocal = () => {
+    console.log('stop');
+    if (stream) {
+      stream.release();
+      setStream(undefined);
+    }
+  };
+
+  const startStreamLocal = async () => {
+    console.log('start');
+    if (!stream) {
+      let s;
+      try {
+        s = await mediaDevices.getUserMedia({
+          video: true,
+        });
+        setStream(s);
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+  };
 
   const checkCameraPermission = async () => {
     const cameraPermission = await Camera.getCameraPermissionStatus();
@@ -212,14 +244,19 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      const photo = await camera.current?.takePhoto({
-        flash: 'off',
-      });
-      console.log('data image => ', photo?.path);
-      if (isIOS) {
-        setUriImage('file:/' + photo?.path);
-      } else {
-        setUriImage(photo?.path!);
+      if (viewShot.current != null) {
+        viewShot.current.capture().then(
+          //callback function to get the result URL of the screnshot
+          (uri: string) => {
+            console.log('viewShot uri => ', uri);
+            if (isIOS) {
+              setUriImage('file:/' + uri);
+            } else {
+              setUriImage(uri);
+            }
+          },
+          (error: any) => console.error('Oops, Something Went Wrong', error)
+        );
       }
     } catch (error) {
       setUriImage('');
@@ -227,27 +264,41 @@ export function CameraView(propCamera: CameraType) {
     }
   };
 
-  if (device == null)
+  const Loading = () => {
     return (
       <SafeAreaView style={styles.container}>
         <ActivityIndicator size={'large'} color={'#175699'} animating={true} />
       </SafeAreaView>
     );
+  };
 
+  
   return (
-    <Camera
-      photo={true}
-      ref={camera}
+    <ViewShot
+      ref={viewShot}
+      options={{
+        handleGLSurfaceViewOnAndroid: true,
+        format: 'png',
+      }}
       style={[
-        style || styles.cameraView,
+        style || styles.container,
         {
           width: width || 60,
           height: height || 60,
         },
       ]}
-      device={device}
-      isActive={appStateVisible == 'active'}
-    />
+    >
+      {stream && appStateVisible == 'active' ? (
+        <RTCView
+          objectFit={'cover'}
+          streamURL={stream.toURL()}
+          style={{ width: width, height: height }}
+          mirror={true}
+        />
+      ) : (
+        <Loading />
+      )}
+    </ViewShot>
   );
 }
 
