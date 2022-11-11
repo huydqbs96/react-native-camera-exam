@@ -86,13 +86,13 @@ export function CameraView(propCamera: CameraType) {
   }, []);
 
   useEffect(() => {
-    // if (permissionCamera != 'authorized') {
-    checkCameraPermission();
-    // } else {
-    //   interval = setTimeout(() => {
-    //     takePhotoAuto();
-    //   }, timeCapture);
-    // }
+    if (permissionCamera != 'granted') {
+      checkCameraPermission();
+    } else {
+      interval.current = setTimeout(() => {
+        takePhotoAuto();
+      }, timeCapture);
+    }
     return () => {
       if (interval.current != null) {
         clearInterval(interval.current);
@@ -132,11 +132,13 @@ export function CameraView(propCamera: CameraType) {
   }, [uriImage]);
 
   useEffect(() => {
-    startStreamLocal();
+    if (permissionCamera == 'granted') {
+      startStreamLocal();
+    }
     return () => {
       stopStreamLocal();
     };
-  }, [stream]);
+  }, [stream, permissionCamera]);
 
   const stopStreamLocal = () => {
     console.log('stop');
@@ -172,21 +174,32 @@ export function CameraView(propCamera: CameraType) {
               takePhotoAuto();
             }, timeCapture);
           } else {
-            setPermissionCamera(statuses);
-            Alert.alert('', 'no permission camera', [
-              {
-                text: 'OK',
-                onPress: () => {
-                  Linking.openURL('app-settings:');
-                },
-              },
-              {
-                text: 'Cancel',
-                onPress: () => {
-                  console.log('dismis alert');
-                },
-              },
-            ]);
+            RNPermissions.request(PERMISSIONS.ANDROID.CAMERA)
+              .then((statuses) => {
+                if (statuses === RESULTS.GRANTED) {
+                  setPermissionCamera(statuses);
+                  interval.current = setTimeout(() => {
+                    takePhotoAuto();
+                  }, timeCapture);
+                } else {
+                  setPermissionCamera(statuses);
+                  Alert.alert('', 'no permission camera', [
+                    {
+                      text: 'OK',
+                      onPress: () => {
+                        Linking.openURL('app-settings:');
+                      },
+                    },
+                    {
+                      text: 'Cancel',
+                      onPress: () => {
+                        console.log('dismis alert');
+                      },
+                    },
+                  ]);
+                }
+              })
+              .catch((e) => console.log(e.message));
           }
         })
         .catch((e) => console.log(e.message));
