@@ -131,6 +131,7 @@ export function CameraView(propCamera: CameraType) {
     }
   }, [uriImage]);
 
+  console.log('localStream', localStream);
   useEffect(() => {
     if (permissionCamera == 'granted') {
       startStreamLocal();
