@@ -62,7 +62,7 @@ export function CameraView(propCamera: CameraType) {
   let interval = useRef<any>();
   const isAndroid = Platform.OS == 'android';
 
-  const [localStream, setStream] = useState<MediaStream>();
+  const [localStream, setStream] = useState<any>(null);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -144,7 +144,7 @@ export function CameraView(propCamera: CameraType) {
     if (localStream) {
       console.log('stop', localStream.release(true));
       localStream.release(true);
-      setStream(undefined);
+      setStream(null);
     }
   };
 
