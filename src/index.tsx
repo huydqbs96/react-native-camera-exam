@@ -63,6 +63,7 @@ export function CameraView(propCamera: CameraType) {
   const [uriImage, setUriImage] = useState<string>('');
   const [permissionCamera, setPermissionCamera] = useState<PermissionStatus>();
   let interval = useRef<any>();
+  const isAndroid = Platform.OS == 'android';
 
   const [stream, setStream] = useState<MediaStream>();
 
@@ -138,7 +139,7 @@ export function CameraView(propCamera: CameraType) {
     return () => {
       stopStreamLocal();
     };
-  }, [stream, permissionCamera]);
+  }, []);
 
   const stopStreamLocal = () => {
     console.log('stop');
@@ -183,20 +184,26 @@ export function CameraView(propCamera: CameraType) {
                   }, timeCapture);
                 } else {
                   setPermissionCamera(statuses);
-                  Alert.alert('', 'no permission camera', [
-                    {
-                      text: 'OK',
-                      onPress: () => {
-                        Linking.openURL('app-settings:');
+                  Alert.alert(
+                    '',
+                    '動作環境チェックに失敗しました。 下記 のボタンをタップして、カメラアクセス を許可してください。',
+                    [
+                      {
+                        text: 'Open Settings',
+                        onPress: () => {
+                          isAndroid
+                            ? Linking.openSettings()
+                            : Linking.openURL('app-settings:');
+                        },
                       },
-                    },
-                    {
-                      text: 'Cancel',
-                      onPress: () => {
-                        console.log('dismis alert');
+                      {
+                        text: 'Cancel',
+                        onPress: () => {
+                          console.log('dismis alert');
+                        },
                       },
-                    },
-                  ]);
+                    ]
+                  );
                 }
               })
               .catch((e) => console.log(e.message));
@@ -251,20 +258,26 @@ export function CameraView(propCamera: CameraType) {
               console.log(
                 'The permission is denied and not requestable anymore'
               );
-              Alert.alert('', 'no permission camera', [
-                {
-                  text: 'OK',
-                  onPress: () => {
-                    Linking.openURL('app-settings:');
+              Alert.alert(
+                '',
+                '動作環境チェックに失敗しました。 下記 のボタンをタップして、カメラアクセス を許可してください。',
+                [
+                  {
+                    text: 'Open Settings',
+                    onPress: () => {
+                      isAndroid
+                        ? Linking.openSettings()
+                        : Linking.openURL('app-settings:');
+                    },
                   },
-                },
-                {
-                  text: 'Cancel',
-                  onPress: () => {
-                    console.log('dismis alert');
+                  {
+                    text: 'Cancel',
+                    onPress: () => {
+                      console.log('dismis alert');
+                    },
                   },
-                },
-              ]);
+                ]
+              );
               break;
           }
         })
@@ -346,7 +359,7 @@ export function CameraView(propCamera: CameraType) {
     try {
       if (viewShot.current != null) {
         viewShot.current.capture().then(
-          //callback function to get the result URL of the screnshot
+          //callback function to get the result URL of the screenshot
           (uri: string) => {
             console.log('viewShot uri => ', uri);
             if (isIOS) {
