@@ -16,7 +16,6 @@ import axios from 'axios';
 import { mediaDevices, MediaStream, RTCView } from 'react-native-webrtc';
 import ViewShot from 'react-native-view-shot';
 import RNPermissions, {
-  check,
   PERMISSIONS,
   PermissionStatus,
   RESULTS,
@@ -65,7 +64,7 @@ export function CameraView(propCamera: CameraType) {
   let interval = useRef<any>();
   const isAndroid = Platform.OS == 'android';
 
-  const [stream, setStream] = useState<MediaStream>();
+  const [localStream, setStream] = useState<MediaStream>();
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -139,26 +138,26 @@ export function CameraView(propCamera: CameraType) {
     return () => {
       stopStreamLocal();
     };
-  }, []);
+  }, [permissionCamera, localStream]);
 
   const stopStreamLocal = () => {
     console.log('stop');
-    if (stream) {
-      stream.release();
+    if (localStream) {
+      localStream.release();
       setStream(undefined);
     }
   };
 
   const startStreamLocal = async () => {
     console.log('start');
-    if (!stream) {
-      let s;
+    if (!localStream) {
+      let stream;
       try {
-        s = await mediaDevices.getUserMedia({
+        stream = await mediaDevices.getUserMedia({
           video: true,
           videoType: 'front',
         });
-        setStream(s);
+        setStream(stream);
       } catch (e) {
         console.warn(e);
       }
@@ -400,10 +399,10 @@ export function CameraView(propCamera: CameraType) {
         },
       ]}
     >
-      {stream && appStateVisible == 'active' ? (
+      {localStream && appStateVisible == 'active' ? (
         <RTCView
           objectFit={'cover'}
-          streamURL={stream.toURL()}
+          streamURL={localStream.toURL()}
           style={{ width: width, height: height }}
           mirror={true}
         />
