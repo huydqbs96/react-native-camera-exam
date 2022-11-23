@@ -53,8 +53,6 @@ export function CameraView(propCamera: CameraType) {
     widthImageSize,
     heightImageSize,
   } = propCamera;
-
-  console.log('props Camera => ', propCamera);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const viewShot = useRef(null);
@@ -131,8 +129,9 @@ export function CameraView(propCamera: CameraType) {
     }
   }, [uriImage]);
 
-  console.log('localStream', localStream);
   useEffect(() => {
+    console.log('props Camera => ', propCamera);
+    console.log('localStream', localStream);
     if (permissionCamera == 'granted') {
       startStreamLocal();
     }
@@ -142,9 +141,9 @@ export function CameraView(propCamera: CameraType) {
   }, [permissionCamera, localStream]);
 
   const stopStreamLocal = () => {
-    console.log('stop');
     if (localStream) {
-      localStream.release();
+      console.log('stop', localStream.release(true));
+      localStream.release(true);
       setStream(undefined);
     }
   };
@@ -228,8 +227,10 @@ export function CameraView(propCamera: CameraType) {
                 .then((result) => {
                   switch (result) {
                     case RESULTS.UNAVAILABLE:
+                      setPermissionCamera(result);
                       break;
                     case RESULTS.DENIED:
+                      setPermissionCamera(result);
                       break;
                     case RESULTS.GRANTED:
                       setPermissionCamera(result);
@@ -238,7 +239,7 @@ export function CameraView(propCamera: CameraType) {
                       }, timeCapture);
                       break;
                     case RESULTS.LIMITED:
-                      //show dialog notify cant create album download
+                      setPermissionCamera(result);
                       break;
                     case RESULTS.BLOCKED:
                       setPermissionCamera(result);
@@ -258,6 +259,7 @@ export function CameraView(propCamera: CameraType) {
               console.log(
                 'The permission is denied and not requestable anymore'
               );
+              setPermissionCamera(result);
               Alert.alert(
                 '',
                 '動作環境チェックに失敗しました。 下記 のボタンをタップして、カメラアクセス を許可してください。',
