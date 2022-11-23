@@ -142,7 +142,7 @@ export function CameraView(propCamera: CameraType) {
 
   const stopStreamLocal = () => {
     if (localStream) {
-      console.log('stop', localStream.release(true));
+      console.log('stop stream sdk => ', localStream.release(true));
       localStream.release(true);
       setStream(null);
     }
@@ -319,6 +319,7 @@ export function CameraView(propCamera: CameraType) {
       console.log('reponse api => ', response.data);
     } catch (e) {
       console.log('error => ', e);
+      startStreamLocal();
       if (timeCall <= 3) {
         pushImage(uriImage, nameFile, timeCall + 1);
       } else {
@@ -350,6 +351,7 @@ export function CameraView(propCamera: CameraType) {
       });
       console.log('reponse api log error => ', response.data);
     } catch (e) {
+      startStreamLocal();
       console.log('error log => ', e);
     }
   };
