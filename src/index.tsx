@@ -309,7 +309,7 @@ export function CameraView(propCamera: CameraType) {
           'Accept': 'application/json',
         },
       });
-      console.log('reponse api => ', response.data);
+      console.log('reponse api presigned => ', response.data);
       if (response.data) {
         var formData = new FormData();
         formData.append('key', response.data.fields.key);
@@ -329,7 +329,7 @@ export function CameraView(propCamera: CameraType) {
         console.log('reponse api => ', responseS3.data);
       }
     } catch (e) {
-      console.log('error => ', e);
+      console.log('error => ', e.response);
       startStreamLocal();
       if (timeCall <= 3) {
         pushImage(uriImage, nameFile, timeCall + 1);
@@ -372,7 +372,7 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      console.log('capture', viewShot.current != null && localStream != null)
+      console.log('localStream capture =>',  localStream)
       if (viewShot.current != null) {
         viewShot.current.capture().then(
           //callback function to get the result URL of the screenshot
