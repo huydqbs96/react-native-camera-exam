@@ -27,8 +27,9 @@ type CameraType = {
   frameWidth?: number;
   framHeight?: number;
   quality?: number; // quality image after resize image capture
-  urlSystem: string; // url using send image to server
+  urlSystem: string; // url get presigned url s3
   urlLogErr: string; // url send log err to server
+  urlPostS3Url: string; // url send url image s3 to server
   style?: ViewStyle; // style camera view
   examId: string; // exam id
   userId: string; // user id
@@ -373,6 +374,7 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
+      console.log('capture', viewShot.current != null && localStream)
       if (viewShot.current != null && localStream) {
         viewShot.current.capture().then(
           //callback function to get the result URL of the screenshot
