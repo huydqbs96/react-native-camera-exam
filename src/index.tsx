@@ -324,6 +324,10 @@ export function CameraView(propCamera: CameraType) {
         let responseS3 = await axios({
           method: 'POST',
           url: response.data.url,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Accept': '*/*',
+          },
           data: formData,
         });
         console.log('reponse api => ', responseS3.data);
