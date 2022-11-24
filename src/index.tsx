@@ -331,7 +331,7 @@ export function CameraView(propCamera: CameraType) {
           data: formData,
         });
         console.log('reponse api => ', responseS3.status);
-        if (response.status == 204) {
+        if (responseS3.status == 204) {
           let responseUrl = await axios({
             method: 'GET',
             url: response.data.url,
