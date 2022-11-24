@@ -69,7 +69,7 @@ export function CameraView(propCamera: CameraType) {
 
   const propsVideo = {
     objectFit: 'cover',
-    streamURL: localStream.toURL(),
+    streamURL: localStream ? localStream.toURL() : '',
     style: { width: width, height: height },
     mirror: true,
   };
