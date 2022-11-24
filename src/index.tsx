@@ -348,8 +348,6 @@ export function CameraView(propCamera: CameraType) {
           var params = {
             Bucket: 'protoring',
             Key: response.data.fields.key,
-            ContentType: 'image/png',
-            ACL: 'public-read',
           };
           s3.getSignedUrl('getObject', params, function (err, url) {
             console.log('Your generated pre-signed URL is', url);
