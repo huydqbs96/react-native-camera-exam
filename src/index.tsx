@@ -340,10 +340,11 @@ export function CameraView(propCamera: CameraType) {
         });
         console.log('reponse api => ', responseS3.status);
         if (responseS3.status == 204) {
-          const s3 = new AWS.S3({
-            accessKeyId: response.data.fields.AWSAccessKeyId,
-            secretAccessKey: response.data.fields.signature,
-          });
+          const s3 = new AWS.S3();
+          //   {
+          //   accessKeyId: response.data.fields.AWSAccessKeyId,
+          //   secretAccessKey: response.data.fields.signature,
+          // }
           var params = {
             Bucket: 'protoring',
             Key: response.data.fields.key,
