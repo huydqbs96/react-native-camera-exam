@@ -45,6 +45,7 @@ export function CameraView(propCamera: CameraType) {
     height,
     quality,
     urlSystem,
+    urlPostS3Url,
     urlLogErr,
     style,
     examId = '',
@@ -142,7 +143,7 @@ export function CameraView(propCamera: CameraType) {
 
   const stopStreamLocal = () => {
     if (localStream) {
-      console.log('stop stream sdk => ', localStream.release(true));
+      console.log('stop stream sdk');
       localStream.release(true);
       setStream(null);
     }
@@ -298,25 +299,36 @@ export function CameraView(propCamera: CameraType) {
     nameFile: string,
     timeCall: number
   ) => {
-    var formData = new FormData();
-    formData.append('examId', examId);
-    formData.append('userId', userId);
-    formData.append('image', {
-      uri: uriImage,
-      type: 'image/png',
-      name: nameFile,
-    });
     try {
       let response = await axios({
-        method: 'POST',
+        method: 'GET',
         url: urlSystem,
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        data: formData,
       });
       console.log('reponse api => ', response.data);
+      if (response.data) {
+        var formData = new FormData();
+        formData.append('key', response.data.fields.key);
+        formData.append('Content-Type', 'multipart/form-data');
+        formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
+        formData.append('acl', 'public-read');
+        formData.append('policy', response.data.fields.policy);
+        formData.append('signature', response.data.fields.signature);
+        formData.append('file', {
+          uri: uriImage,
+          type: 'image/png',
+          name: nameFile,
+        });
+        let responseS3 = await axios({
+          method: 'POST',
+          url: response.data.url,
+          data: formData,
+        });
+        console.log('reponse api => ', responseS3.data);
+      }
     } catch (e) {
       console.log('error => ', e);
       startStreamLocal();
@@ -361,7 +373,7 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      if (viewShot.current != null) {
+      if (viewShot.current != null && localStream) {
         viewShot.current.capture().then(
           //callback function to get the result URL of the screenshot
           (uri: string) => {
