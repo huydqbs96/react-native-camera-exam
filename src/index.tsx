@@ -313,9 +313,7 @@ export function CameraView(propCamera: CameraType) {
       if (response.data) {
         var formData = new FormData();
         formData.append('key', response.data.fields.key);
-        formData.append('Content-Type', 'multipart/form-data');
         formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
-        formData.append('acl', 'public-read');
         formData.append('policy', response.data.fields.policy);
         formData.append('signature', response.data.fields.signature);
         formData.append('file', {
