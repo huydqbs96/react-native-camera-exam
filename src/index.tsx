@@ -330,7 +330,18 @@ export function CameraView(propCamera: CameraType) {
           },
           data: formData,
         });
-        console.log('reponse api => ', responseS3.data);
+        console.log('reponse api => ', responseS3.status);
+        if (response.status == 204) {
+          let responseUrl = await axios({
+            method: 'GET',
+            url: response.data.url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+            },
+          });
+          console.log('responseUrl =>', responseUrl.data)
+        }
       }
     } catch (e) {
       console.log('error => ', e.response);
@@ -338,7 +349,7 @@ export function CameraView(propCamera: CameraType) {
       if (timeCall <= 3) {
         pushImage(uriImage, nameFile, timeCall + 1);
       } else {
-        logError(e);
+        logError(e.response);
       }
     }
   };
@@ -376,7 +387,7 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      console.log('localStream capture =>',  localStream)
+      console.log('localStream capture =>', localStream);
       if (viewShot.current != null) {
         viewShot.current.capture().then(
           //callback function to get the result URL of the screenshot
