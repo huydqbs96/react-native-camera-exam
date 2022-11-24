@@ -13,14 +13,14 @@ import {
 } from 'react-native';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import axios from 'axios';
-import { mediaDevices, MediaStream, RTCView } from 'react-native-webrtc';
+import { mediaDevices, RTCView } from 'react-native-webrtc';
 import ViewShot from 'react-native-view-shot';
 import RNPermissions, {
   PERMISSIONS,
   PermissionStatus,
   RESULTS,
 } from 'react-native-permissions';
-var AWS = require('aws-sdk/dist/aws-sdk-react-native');
+import AWS from 'aws-sdk';
 
 type CameraType = {
   width?: number; // camera view width size
@@ -66,6 +66,13 @@ export function CameraView(propCamera: CameraType) {
   const isAndroid = Platform.OS == 'android';
 
   const [localStream, setStream] = useState<any>(null);
+
+  const propsVideo = {
+    objectFit: 'cover',
+    streamURL: localStream.toURL(),
+    style: { width: width, height: height },
+    mirror: true,
+  };
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -333,36 +340,21 @@ export function CameraView(propCamera: CameraType) {
         });
         console.log('reponse api => ', responseS3.status);
         if (responseS3.status == 204) {
-          const s3 = AWS.S3({
+          const s3 = new AWS.S3({
             accessKeyId: response.data.fields.AWSAccessKeyId,
             secretAccessKey: response.data.fields.policy,
-            signatureVersion: "v4",
           });
-          var getImageSignedUrl = async function (key, fileType) {
-            return new Promise((resolve, reject) => {
-              s3.getSignedUrl(
-                "putObject",
-                {
-                  Bucket: response.data.url,
-                  Key: response.data.fields.key,
-                  ContentType: 'image/png',
-                  ACL: "public-read",
-                  Expires: 300,
-                },
-                (err, url) => {
-                  if (err) {
-                    reject(err);
-                  } else {
-                    resolve(url);
-                  }
-                }
-              );
-            });
+          var params = {
+            Bucket: response.data.url,
+            Key: response.data.fields.key,
           };
-          console.log('responseUrl =>', getImageSignedUrl)
+          s3.getSignedUrl('getObject', params, function (err, url) {
+            console.log('Your generated pre-signed URL is', url);
+          });
+          // console.log('responseUrl =>', responseS3.data);
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('error => ', e.response);
       startStreamLocal();
       if (timeCall <= 3) {
@@ -451,12 +443,7 @@ export function CameraView(propCamera: CameraType) {
       ]}
     >
       {localStream && appStateVisible == 'active' ? (
-        <RTCView
-          objectFit={'cover'}
-          streamURL={localStream.toURL()}
-          style={{ width: width, height: height }}
-          mirror={true}
-        />
+        <RTCView {...propsVideo} />
       ) : (
         <Loading />
       )}
