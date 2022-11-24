@@ -20,6 +20,7 @@ import RNPermissions, {
   PermissionStatus,
   RESULTS,
 } from 'react-native-permissions';
+var AWS = require('aws-sdk/dist/aws-sdk-react-native');
 
 type CameraType = {
   width?: number; // camera view width size
@@ -332,15 +333,33 @@ export function CameraView(propCamera: CameraType) {
         });
         console.log('reponse api => ', responseS3.status);
         if (responseS3.status == 204) {
-          let responseUrl = await axios({
-            method: 'GET',
-            url: response.data.url,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': '*/*',
-            },
+          const s3 = AWS.S3({
+            accessKeyId: response.data.fields.AWSAccessKeyId,
+            secretAccessKey: response.data.fields.policy,
+            signatureVersion: "v4",
           });
-          console.log('responseUrl =>', responseUrl.data)
+          var getImageSignedUrl = async function (key, fileType) {
+            return new Promise((resolve, reject) => {
+              s3.getSignedUrl(
+                "putObject",
+                {
+                  Bucket: response.data.url,
+                  Key: response.data.fields.key,
+                  ContentType: 'image/png',
+                  ACL: "public-read",
+                  Expires: 300,
+                },
+                (err, url) => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    resolve(url);
+                  }
+                }
+              );
+            });
+          };
+          console.log('responseUrl =>', getImageSignedUrl)
         }
       }
     } catch (e) {
