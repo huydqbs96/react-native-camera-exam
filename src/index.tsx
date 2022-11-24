@@ -342,10 +342,10 @@ export function CameraView(propCamera: CameraType) {
         if (responseS3.status == 204) {
           const s3 = new AWS.S3({
             accessKeyId: response.data.fields.AWSAccessKeyId,
-            secretAccessKey: response.data.fields.policy,
+            secretAccessKey: response.data.fields.signature,
           });
           var params = {
-            Bucket: response.data.url,
+            Bucket: 'protoring',
             Key: response.data.fields.key,
           };
           s3.getSignedUrl('getObject', params, function (err, url) {
