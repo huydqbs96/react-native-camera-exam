@@ -352,9 +352,9 @@ export function CameraView(propCamera: CameraType) {
         region: AWS.config.region,
       });
       var params = {
-        'Bucket': bucketName,
-        'Key': response.data.fields.key,
-        'Content-Type': 'image/png',
+        Bucket: bucketName,
+        Key: response.data.fields.key,
+        type: 'image/png',
       };
       s3.getSignedUrl('getObject', params, async function (err, url) {
         if (err) {
