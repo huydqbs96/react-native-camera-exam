@@ -355,7 +355,7 @@ export function CameraView(propCamera: CameraType) {
       var params = {
         Bucket: bucketName,
         Key: response.data.fields.key,
-        ContentType: 'image/png'
+        ResponseContentType: 'image/png'
       };
       s3.getSignedUrl('getObject', params, async function (err, url) {
         if (err) {
