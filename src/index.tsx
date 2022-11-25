@@ -34,6 +34,7 @@ type CameraType = {
   style?: ViewStyle; // style camera view
   examId: string; // exam id
   userId: string; // user id
+  roomId: string; // room id exam
   timeCapture?: number; // timeout between each auto take picture
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
@@ -54,11 +55,12 @@ export function CameraView(propCamera: CameraType) {
     style,
     examId = '',
     userId = '',
+    roomId,
     timeCapture = 30000,
     widthImageSize,
     heightImageSize,
     secretAccessKey,
-    bucketName
+    bucketName,
   } = propCamera;
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -322,46 +324,55 @@ export function CameraView(propCamera: CameraType) {
         },
       });
       console.log('reponse api presigned => ', response.data);
-      if (response.data) {
+      var formData = new FormData();
+      formData.append('key', response.data.fields.key);
+      formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
+      formData.append('policy', response.data.fields.policy);
+      formData.append('signature', response.data.fields.signature);
+      formData.append('file', {
+        uri: uriImage,
+        type: 'image/png',
+        name: nameFile,
+      });
+      let responseS3 = await axios({
+        method: 'POST',
+        url: response.data.url,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': '*/*',
+        },
+        data: formData,
+      });
+      console.log('reponse api => ', responseS3.status);
+      AWS.config.region = 'ap-northeast-1';
+      const s3 = new AWS.S3({
+        accessKeyId: response.data.fields.AWSAccessKeyId,
+        secretAccessKey: secretAccessKey,
+        signatureVersion: 'v4',
+        region: AWS.config.region,
+      });
+      var params = {
+        Bucket: bucketName,
+        Key: response.data.fields.key,
+      };
+      s3.getSignedUrl('getObject', params, function (err, url) {
+        console.log('Your generated pre-signed URL is', url);
         var formData = new FormData();
-        formData.append('key', response.data.fields.key);
-        formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
-        formData.append('policy', response.data.fields.policy);
-        formData.append('signature', response.data.fields.signature);
-        formData.append('file', {
-          uri: uriImage,
-          type: 'image/png',
-          name: nameFile,
-        });
-        let responseS3 = await axios({
+        formData.append('examKey', examId);
+        formData.append('image_url', url);
+        formData.append('room_id', roomId);
+        formData.append('user_id', userId);
+        let resSendUrl = await axios({
           method: 'POST',
-          url: response.data.url,
+          url: urlPostS3Url,
           headers: {
             'Content-Type': 'multipart/form-data',
             'Accept': '*/*',
           },
           data: formData,
         });
-        console.log('reponse api => ', responseS3.status);
-        if (responseS3.status == 204) {
-          AWS.config.region = 'ap-northeast-1';
-          console.log('secretAccessKey', secretAccessKey + "--" + bucketName)
-          const s3 = new AWS.S3({
-            accessKeyId: response.data.fields.AWSAccessKeyId,
-            secretAccessKey: secretAccessKey,
-            signatureVersion: 'v4',
-            region: AWS.config.region,
-          });
-          var params = {
-            Bucket: bucketName,
-            Key: response.data.fields.key,
-          };
-          s3.getSignedUrl('getObject', params, function (err, url) {
-            console.log('Your generated pre-signed URL is', url);
-          });
-          // console.log('responseUrl =>', responseS3.data);
-        }
-      }
+        console.log('resSendUrl => ', resSendUrl.data);
+      });
     } catch (e: any) {
       console.log('error => ', e.response);
       startStreamLocal();
@@ -378,10 +389,8 @@ export function CameraView(propCamera: CameraType) {
    */
   const logError = async (error: any) => {
     setUriImage('');
-    console.log('error send => ', error);
     const body = {
-      user_id: userId,
-      exam_id: examId,
+      info: JSON.parse(`{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}`),
       message: error,
     };
     try {
@@ -390,7 +399,7 @@ export function CameraView(propCamera: CameraType) {
         url: urlLogErr,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json',
+          'Accept': '*/*',
         },
         data: body,
       });
