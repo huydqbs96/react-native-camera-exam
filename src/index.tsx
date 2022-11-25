@@ -329,6 +329,7 @@ export function CameraView(propCamera: CameraType) {
       formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
       formData.append('policy', response.data.fields.policy);
       formData.append('signature', response.data.fields.signature);
+      // formData.append('Content-Type', 'image/png')
       formData.append('file', {
         uri: uriImage,
         type: 'image/png',
@@ -354,7 +355,7 @@ export function CameraView(propCamera: CameraType) {
       var params = {
         Bucket: bucketName,
         Key: response.data.fields.key,
-        type: 'image/png',
+        ContentType: 'image/png'
       };
       s3.getSignedUrl('getObject', params, async function (err, url) {
         if (err) {
