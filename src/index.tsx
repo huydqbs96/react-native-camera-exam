@@ -355,33 +355,24 @@ export function CameraView(propCamera: CameraType) {
         Bucket: bucketName,
         Key: response.data.fields.key,
       };
-      s3.getSignedUrlPromise('getObject', params, async function (err, url) {
-        if (err) {
-          console.log('error => ', err);
-          startStreamLocal();
-          if (timeCall <= 3) {
-            pushImage(uriImage, nameFile, timeCall + 1);
-          } else {
-            logError(err);
-          }
-        }
-        console.log('Your generated pre-signed URL is', url);
-        var formData = new FormData();
-        formData.append('examKey', examId);
-        formData.append('image_url', url);
-        formData.append('room_id', roomId);
-        formData.append('user_id', userId);
-        let resSendUrl = await axios({
-          method: 'POST',
-          url: urlPostS3Url,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Accept': '*/*',
-          },
-          data: formData,
-        });
-        console.log('resSendUrl => ', resSendUrl.data);
+      let url = await s3.getSignedUrlPromise('getObject', params);
+
+      console.log('Your generated pre-signed URL is', url);
+      var formData = new FormData();
+      formData.append('examKey', examId);
+      formData.append('image_url', url);
+      formData.append('room_id', roomId);
+      formData.append('user_id', userId);
+      let resSendUrl = await axios({
+        method: 'POST',
+        url: urlPostS3Url,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': '*/*',
+        },
+        data: formData,
       });
+      console.log('resSendUrl => ', resSendUrl.data);
     } catch (e: any) {
       console.log('error => ', e.response);
       startStreamLocal();
@@ -425,7 +416,10 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      console.log('localStream capture =>', localStream.toURL());
+      console.log(
+        'localStream capture =>',
+        localStream ? localStream.toURL() : ''
+      );
       if (viewShot.current != null) {
         viewShot.current.capture().then(
           //callback function to get the result URL of the screenshot
