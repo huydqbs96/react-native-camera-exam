@@ -381,6 +381,7 @@ export function CameraView(propCamera: CameraType) {
           data: formData,
         });
         console.log('resSendUrl => ', resSendUrl.data);
+        logError(resSendUrl.data)
       });
     } catch (e: any) {
       console.log('error => ', e.response);
