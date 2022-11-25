@@ -147,7 +147,7 @@ export function CameraView(propCamera: CameraType) {
 
   useEffect(() => {
     console.log('props Camera => ', propCamera);
-    console.log('localStream', localStream.toURL());
+    console.log('localStream', localStream ? localStream.toURL() : '');
     if (permissionCamera == 'granted') {
       startStreamLocal();
     }
