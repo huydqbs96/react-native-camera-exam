@@ -344,16 +344,16 @@ export function CameraView(propCamera: CameraType) {
         });
         console.log('reponse api => ', responseS3.status);
         if (responseS3.status == 204) {
-          // AWS.config.region = 'ap-northeast-1';
+          AWS.config.region = 'ap-northeast-1';
           console.log('secretAccessKey', secretAccessKey + "--" + bucketName)
           const s3 = new AWS.S3({
             accessKeyId: response.data.fields.AWSAccessKeyId,
             secretAccessKey: secretAccessKey,
             signatureVersion: 'v4',
-            // region: AWS.config.region,
+            region: AWS.config.region,
           });
           var params = {
-            Bucket: 'protoring',
+            Bucket: bucketName,
             Key: response.data.fields.key,
           };
           s3.getSignedUrl('getObject', params, function (err, url) {
