@@ -355,7 +355,16 @@ export function CameraView(propCamera: CameraType) {
         Bucket: bucketName,
         Key: response.data.fields.key,
       };
-      s3.getSignedUrl('getObject', params, function (err, url) {
+      s3.getSignedUrl('getObject', params, async function (err, url) {
+        if (err) {
+          console.log('error => ', err);
+          startStreamLocal();
+          if (timeCall <= 3) {
+            pushImage(uriImage, nameFile, timeCall + 1);
+          } else {
+            logError(err);
+          }
+        }
         console.log('Your generated pre-signed URL is', url);
         var formData = new FormData();
         formData.append('examKey', examId);
@@ -390,7 +399,9 @@ export function CameraView(propCamera: CameraType) {
   const logError = async (error: any) => {
     setUriImage('');
     const body = {
-      info: JSON.parse(`{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}`),
+      info: JSON.parse(
+        `{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}`
+      ),
       message: error,
     };
     try {
