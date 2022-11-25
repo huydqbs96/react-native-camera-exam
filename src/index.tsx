@@ -37,6 +37,7 @@ type CameraType = {
   timeCapture?: number; // timeout between each auto take picture
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
+  secretAccessKey: string; // Secret Access Key Aws
 };
 
 const isIOS: boolean = Platform.OS === 'ios';
@@ -55,6 +56,7 @@ export function CameraView(propCamera: CameraType) {
     timeCapture = 30000,
     widthImageSize,
     heightImageSize,
+    secretAccessKey
   } = propCamera;
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -343,7 +345,7 @@ export function CameraView(propCamera: CameraType) {
           AWS.config.region = 'ap-northeast-1';
           const s3 = new AWS.S3({
             accessKeyId: response.data.fields.AWSAccessKeyId,
-            secretAccessKey: response.data.fields.signature,
+            secretAccessKey: secretAccessKey,
             signatureVersion: 'v4',
             region: AWS.config.region,
           });
