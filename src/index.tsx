@@ -147,7 +147,7 @@ export function CameraView(propCamera: CameraType) {
 
   useEffect(() => {
     console.log('props Camera => ', propCamera);
-    console.log('localStream', localStream);
+    console.log('localStream', localStream.toURL());
     if (permissionCamera == 'granted') {
       startStreamLocal();
     }
@@ -355,7 +355,7 @@ export function CameraView(propCamera: CameraType) {
         Bucket: bucketName,
         Key: response.data.fields.key,
       };
-      s3.getSignedUrl('getObject', params, async function (err, url) {
+      s3.getSignedUrlPromise('getObject', params, async function (err, url) {
         if (err) {
           console.log('error => ', err);
           startStreamLocal();
@@ -425,7 +425,7 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      console.log('localStream capture =>', localStream);
+      console.log('localStream capture =>', localStream.toURL());
       if (viewShot.current != null) {
         viewShot.current.capture().then(
           //callback function to get the result URL of the screenshot
