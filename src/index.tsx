@@ -38,6 +38,7 @@ type CameraType = {
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
   secretAccessKey: string; // Secret Access Key Aws
+  bucketName: string; //bucket name aws
 };
 
 const isIOS: boolean = Platform.OS === 'ios';
@@ -56,7 +57,8 @@ export function CameraView(propCamera: CameraType) {
     timeCapture = 30000,
     widthImageSize,
     heightImageSize,
-    secretAccessKey
+    secretAccessKey,
+    bucketName
   } = propCamera;
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -343,6 +345,7 @@ export function CameraView(propCamera: CameraType) {
         console.log('reponse api => ', responseS3.status);
         if (responseS3.status == 204) {
           // AWS.config.region = 'ap-northeast-1';
+          console.log('secretAccessKey', secretAccessKey + "--" + bucketName)
           const s3 = new AWS.S3({
             accessKeyId: response.data.fields.AWSAccessKeyId,
             secretAccessKey: secretAccessKey,
