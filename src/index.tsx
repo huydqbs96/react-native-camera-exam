@@ -381,7 +381,7 @@ export function CameraView(propCamera: CameraType) {
           data: formData,
         });
         console.log('resSendUrl => ', resSendUrl.data);
-        logError(resSendUrl.data)
+        logError(resSendUrl.data);
       });
     } catch (e: any) {
       console.log('error => ', e.response);
@@ -400,11 +400,10 @@ export function CameraView(propCamera: CameraType) {
   const logError = async (error: any) => {
     setUriImage('');
     const body = {
-      info: JSON.parse(
-        `{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}`
-      ),
+      info: `{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}`,
       message: error,
     };
+    console.log('body log err', body);
     try {
       let response = await axios({
         method: 'POST',
