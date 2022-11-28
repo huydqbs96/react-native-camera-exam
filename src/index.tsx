@@ -40,7 +40,7 @@ type CameraType = {
   heightImageSize?: number; // height size after resize image
   secretAccessKey: string; // Secret Access Key Aws
   bucketName: string; // bucket name aws
-  accessToken: string; // access token to authorization when upload tracking image,
+  accessToken: string; // access token to authorization when upload tracking image
   regionAWS: string; // region config aws
 };
 
@@ -174,8 +174,15 @@ export function CameraView(propCamera: CameraType) {
       let stream;
       try {
         stream = await mediaDevices.getUserMedia({
-          video: true,
-          videoType: 'front',
+          video: {
+            mandatory: {
+              minWidth: 500, // Provide your own width, height and frame rate here
+              minHeight: 300,
+              minFrameRate: 30,
+            },
+            facingMode: 'user',
+            // facingMode: { exact: "environment" }, //request back camera
+          },
         });
         setStream(stream);
       } catch (e) {
