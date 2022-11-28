@@ -39,7 +39,9 @@ type CameraType = {
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
   secretAccessKey: string; // Secret Access Key Aws
-  bucketName: string; //bucket name aws
+  bucketName: string; // bucket name aws
+  accessToken: string; // access token to authorization when upload tracking image,
+  regionAWS: string; // region config aws
 };
 
 const isIOS: boolean = Platform.OS === 'ios';
@@ -61,6 +63,8 @@ export function CameraView(propCamera: CameraType) {
     heightImageSize,
     secretAccessKey,
     bucketName,
+    accessToken,
+    regionAWS,
   } = propCamera;
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -341,11 +345,12 @@ export function CameraView(propCamera: CameraType) {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Accept': '*/*',
+          'Authorization': `Bearer ${accessToken}`,
         },
         data: formData,
       });
       console.log('reponse api => ', responseS3.status);
-      AWS.config.region = 'ap-northeast-1';
+      AWS.config.region = regionAWS;
       const s3 = new AWS.S3({
         accessKeyId: response.data.fields.AWSAccessKeyId,
         secretAccessKey: secretAccessKey,
@@ -379,6 +384,7 @@ export function CameraView(propCamera: CameraType) {
           headers: {
             'Content-Type': 'multipart/form-data',
             'Accept': '*/*',
+            'Authorization': `Bearer ${accessToken}`,
           },
           data: formData,
         });
@@ -412,6 +418,7 @@ export function CameraView(propCamera: CameraType) {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Accept': '*/*',
+          'Authorization': `Bearer ${accessToken}`,
         },
         data: body,
       });
