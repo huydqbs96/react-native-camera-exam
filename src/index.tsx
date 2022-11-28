@@ -325,6 +325,7 @@ export function CameraView(propCamera: CameraType) {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
         },
       });
       console.log('reponse api presigned => ', response.data);
@@ -333,7 +334,6 @@ export function CameraView(propCamera: CameraType) {
       formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
       formData.append('policy', response.data.fields.policy);
       formData.append('signature', response.data.fields.signature);
-      // formData.append('Content-Type', 'image/png')
       formData.append('file', {
         uri: uriImage,
         type: 'image/png',
@@ -345,7 +345,6 @@ export function CameraView(propCamera: CameraType) {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Accept': '*/*',
-          'Authorization': `Bearer ${accessToken}`,
         },
         data: formData,
       });
