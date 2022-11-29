@@ -72,13 +72,14 @@
   },
   "peerDependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.3",
+    "aws-sdk": "^2.1261.0",
     "axios": "0.27.2",
     "react": "*",
     "react-native": "*",
     "react-native-permissions": "*",
     "react-native-view-shot": "*",
     "react-native-webrtc": "*",
-    "aws-sdk": "^2.1261.0"
+    "@react-native-community/netinfo": "*"
   },
   "jest": {
     "preset": "react-native",
@@ -156,6 +157,7 @@
   },
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.3",
+    "@react-native-community/netinfo": "^9.3.7",
     "aws-sdk": "^2.1261.0",
     "axios": "0.27.2",
     "react-native-permissions": "*",

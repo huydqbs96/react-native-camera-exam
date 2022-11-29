@@ -21,6 +21,7 @@ import RNPermissions, {
   RESULTS,
 } from 'react-native-permissions';
 import AWS from 'aws-sdk';
+import { get, post, postForm, refreshToken } from './network';
 
 type CameraType = {
   width?: number; // camera view width size
@@ -42,6 +43,10 @@ type CameraType = {
   bucketName: string; // bucket name aws
   accessToken: string; // access token to authorization when upload tracking image
   regionAWS: string; // region config aws
+  clientId: string; // client id proctor
+  clientSecret: string; // client secret proctor
+  urlRefreshToken: string; //url get new accesstoken using refreshtoken
+  logOutFunc: () => {}; // call function logout when refresh token expired
 };
 
 const isIOS: boolean = Platform.OS === 'ios';
@@ -65,6 +70,10 @@ export function CameraView(propCamera: CameraType) {
     bucketName,
     accessToken,
     regionAWS,
+    clientId,
+    clientSecret,
+    urlRefreshToken,
+    logOutFunc,
   } = propCamera;
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -144,21 +153,20 @@ export function CameraView(propCamera: CameraType) {
           // response.path is the path of the new image
           // response.name is the name of the new image with the extension
           // response.size is the size of the new image
-          console.log('response => ', response);
+          console.log('response resize image => ', response);
           pushImage(response.uri, response.name, 1);
         })
         .catch((err) => {
           // Oops, something went wrong. Check that the filename is correct and
           // inspect err to get more details.
           setUriImage('');
-          console.log('error resize => ', err);
+          console.log('error resize image => ', err);
         });
     }
   }, [uriImage]);
 
   useEffect(() => {
     console.log('props Camera => ', propCamera);
-    console.log('localStream', localStream ? localStream.toURL() : '');
     if (permissionCamera == 'granted') {
       startStreamLocal();
     }
@@ -333,16 +341,30 @@ export function CameraView(propCamera: CameraType) {
     timeCall: number
   ) => {
     try {
-      let response = await axios({
-        method: 'GET',
-        url: urlSystem,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      });
+      //call api get presigned url from aws
+      let response = await get(
+        urlSystem,
+        true,
+        accessToken,
+        refreshToken,
+        urlRefreshToken,
+        clientId,
+        clientSecret
+      );
+      // await axios({
+      //   method: 'GET',
+      //   url: urlSystem,
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Accept': 'application/json',
+      //     'Authorization': `Bearer ${accessToken}`,
+      //   },
+      // });
       console.log('reponse api presigned => ', response.data);
+
+      /**
+       * upload image to s3 aws with presigned url
+       */
       var formData = new FormData();
       formData.append('key', response.data.fields.key);
       formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
@@ -353,16 +375,30 @@ export function CameraView(propCamera: CameraType) {
         type: 'image/png',
         name: nameFile,
       });
-      let responseS3 = await axios({
-        method: 'POST',
-        url: response.data.url,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Accept': '*/*',
-        },
-        data: formData,
-      });
+      let responseS3 = await postForm(
+        response.data.url,
+        formData,
+        accessToken,
+        refreshToken,
+        urlRefreshToken,
+        clientId,
+        clientSecret,
+        false
+      );
+      // await axios({
+      //   method: 'POST',
+      //   url: response.data.url,
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //     'Accept': '*/*',
+      //   },
+      //   data: formData,
+      // });
       console.log('reponse api => ', responseS3.status);
+
+      /**
+       * get url preivew image from s3 aws using aws-sdk
+       */
       AWS.config.region = regionAWS;
       const s3 = new AWS.S3({
         accessKeyId: response.data.fields.AWSAccessKeyId,
@@ -377,7 +413,7 @@ export function CameraView(propCamera: CameraType) {
       };
       s3.getSignedUrl('getObject', params, async function (err, url) {
         if (err) {
-          console.log('error => ', err);
+          console.log('error when get preview image url  => ', err);
           startStreamLocal();
           if (timeCall <= 3) {
             pushImage(uriImage, nameFile, timeCall + 1);
@@ -386,24 +422,38 @@ export function CameraView(propCamera: CameraType) {
           }
         }
         console.log('Your generated pre-signed URL is', url);
+
+        /**
+         * * start call api upload url preview image to server
+         */
         try {
           var formData = new FormData();
           formData.append('examKey', examId);
           formData.append('image_url', url);
           formData.append('room_id', roomId);
           formData.append('user_id', userId);
-          let resSendUrl = await axios({
-            method: 'POST',
-            url: urlPostS3Url,
-            headers: {
-              'Content-Type': 'multipart/form-data',
-              'Accept': '*/*',
-              'Authorization': `Bearer ${accessToken}`,
-            },
-            data: formData,
-          });
+          let resSendUrl = await postForm(
+            urlPostS3Url,
+            formData,
+            accessToken,
+            refreshToken,
+            urlRefreshToken,
+            clientId,
+            clientSecret,
+            true
+          );
+          // await axios({
+          //   method: 'POST',
+          //   url: urlPostS3Url,
+          //   headers: {
+          //     'Content-Type': 'multipart/form-data',
+          //     'Accept': '*/*',
+          //     'Authorization': `Bearer ${accessToken}`,
+          //   },
+          //   data: formData,
+          // });
         } catch (error) {
-          console.log('error urlPostS3Url => ', error.response);
+          console.log('error send url to server => ', error.response);
           if (timeCall <= 3) {
             pushImage(uriImage, nameFile, timeCall + 1);
           } else {
@@ -411,9 +461,14 @@ export function CameraView(propCamera: CameraType) {
           }
         }
         console.log('resSendUrl => ', resSendUrl.data);
+        //* * end call api upload url preview image
       });
     } catch (e: any) {
       console.log('error => ', e.response);
+      /**
+       * retry upload image 3 time when has error
+       * if still have error then call api log error
+       */
       if (timeCall <= 3) {
         pushImage(uriImage, nameFile, timeCall + 1);
       } else {
@@ -424,6 +479,7 @@ export function CameraView(propCamera: CameraType) {
 
   /**
    * log error when upload image error after 3 times
+   * @param error error when upload image
    */
   const logError = async (error: any) => {
     setUriImage('');
@@ -433,16 +489,27 @@ export function CameraView(propCamera: CameraType) {
     };
     console.log('body log err: ', body);
     try {
-      let response = await axios({
-        method: 'POST',
-        url: urlLogErr,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': '*/*',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-        data: body,
-      });
+      let response = await post(
+        urlLogErr,
+        body,
+        true,
+        false,
+        accessToken,
+        refreshToken,
+        urlRefreshToken,
+        clientId,
+        clientSecret
+      );
+      // await axios({
+      //   method: 'POST',
+      //   url: urlLogErr,
+      //   headers: {
+      //     'Content-Type': 'application/x-www-form-urlencoded',
+      //     'Accept': '*/*',
+      //     'Authorization': `Bearer ${accessToken}`,
+      //   },
+      //   data: body,
+      // });
       console.log('reponse api log error => ', response.data);
     } catch (e) {
       console.log('error log => ', e);
@@ -478,6 +545,7 @@ export function CameraView(propCamera: CameraType) {
     }
   };
 
+  // view loading show when local stream not initialized
   const Loading = () => {
     return (
       <SafeAreaView style={styles.container}>
