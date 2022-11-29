@@ -12,7 +12,6 @@ import {
   Linking,
 } from 'react-native';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
-import axios from 'axios';
 import { mediaDevices, RTCView } from 'react-native-webrtc';
 import ViewShot from 'react-native-view-shot';
 import RNPermissions, {
@@ -21,7 +20,7 @@ import RNPermissions, {
   RESULTS,
 } from 'react-native-permissions';
 import AWS from 'aws-sdk';
-import { get, post, postForm, refreshToken } from './network';
+import { get, post, postForm } from './network';
 
 type CameraType = {
   width?: number; // camera view width size
@@ -46,6 +45,7 @@ type CameraType = {
   clientId: string; // client id proctor
   clientSecret: string; // client secret proctor
   urlRefreshToken: string; //url get new accesstoken using refreshtoken
+  refreshToken: string; // refresh token from proctor
   logOutFunc: () => void; // call function logout when refresh token expired
 };
 
@@ -73,6 +73,7 @@ export function CameraView(propCamera: CameraType) {
     clientId,
     clientSecret,
     urlRefreshToken,
+    refreshToken,
     logOutFunc,
   } = propCamera;
   const appState = useRef(AppState.currentState);
@@ -85,7 +86,6 @@ export function CameraView(propCamera: CameraType) {
   const isAndroid = Platform.OS == 'android';
 
   const [localStream, setStream] = useState<any>(null);
-  const [token, setNewToken] = useState(accessToken);
 
   const propsVideo = {
     objectFit: 'cover',
@@ -93,12 +93,6 @@ export function CameraView(propCamera: CameraType) {
     style: { width: width, height: height },
     mirror: true,
   };
-
-  useEffect(() => {
-    setNewToken(accessToken);
-    console.log('timeCapture', timeCapture);
-    console.log('accessToken', accessToken);
-  }, [accessToken, timeCapture]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -349,7 +343,8 @@ export function CameraView(propCamera: CameraType) {
         refreshToken,
         urlRefreshToken,
         clientId,
-        clientSecret
+        clientSecret,
+        logOutFunc
       );
       // await axios({
       //   method: 'GET',
@@ -383,7 +378,8 @@ export function CameraView(propCamera: CameraType) {
         urlRefreshToken,
         clientId,
         clientSecret,
-        false
+        false,
+        logOutFunc
       );
       // await axios({
       //   method: 'POST',
@@ -440,8 +436,10 @@ export function CameraView(propCamera: CameraType) {
             urlRefreshToken,
             clientId,
             clientSecret,
-            true
+            true,
+            logOutFunc
           );
+          console.log('resSendUrl => ', resSendUrl.data);
           // await axios({
           //   method: 'POST',
           //   url: urlPostS3Url,
@@ -452,7 +450,7 @@ export function CameraView(propCamera: CameraType) {
           //   },
           //   data: formData,
           // });
-        } catch (error) {
+        } catch (error: any) {
           console.log('error send url to server => ', error.response);
           if (timeCall <= 3) {
             pushImage(uriImage, nameFile, timeCall + 1);
@@ -460,7 +458,6 @@ export function CameraView(propCamera: CameraType) {
             logError(error.response);
           }
         }
-        console.log('resSendUrl => ', resSendUrl.data);
         //* * end call api upload url preview image
       });
     } catch (e: any) {
@@ -498,7 +495,8 @@ export function CameraView(propCamera: CameraType) {
         refreshToken,
         urlRefreshToken,
         clientId,
-        clientSecret
+        clientSecret,
+        logOutFunc
       );
       // await axios({
       //   method: 'POST',
