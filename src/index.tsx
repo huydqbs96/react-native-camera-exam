@@ -87,6 +87,8 @@ export function CameraView(propCamera: CameraType) {
 
   useEffect(() => {
     setNewToken(accessToken);
+    console.log('timeCapture', timeCapture)
+    console.log('accessToken', accessToken)
   }, [accessToken, timeCapture]);
 
   useEffect(() => {
