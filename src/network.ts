@@ -84,6 +84,12 @@ export const post = async (
       headers: headers,
       data: body,
     });
+
+    console.log(
+      'response post => ',
+      responseJson.data + '---' + responseJson.status
+    );
+
     if (
       !responseJson.data.result &&
       (responseJson.data.message === 401 || responseJson.data.message === 403)
@@ -122,7 +128,7 @@ export const post = async (
         );
       }
     } else {
-      return responseJson.data;
+      return responseJson;
     }
   } else {
     if (!alertPresent) {
@@ -163,6 +169,11 @@ export const get = async (
       headers: headers,
     });
 
+    console.log(
+      'response get => ',
+      responseJson.data + '---' + responseJson.status
+    );
+
     if (
       !responseJson.data.result &&
       (responseJson.data.message === 401 || responseJson.data.message === 403)
@@ -199,7 +210,7 @@ export const get = async (
         );
       }
     } else {
-      return responseJson.data;
+      return responseJson;
     }
   } else {
     if (!alertPresent) {
@@ -242,6 +253,11 @@ export const postForm = async (
       data: data,
     });
 
+    console.log(
+      'response postForm => ',
+      responseJson.data + '---' + responseJson.status
+    );
+
     if (
       !responseJson.data.result &&
       (responseJson.data.code === 401 || responseJson.data.message === 403)
@@ -279,7 +295,7 @@ export const postForm = async (
         );
       }
     } else {
-      return responseJson.data;
+      return responseJson;
     }
   } else {
     if (!alertPresent) {

@@ -519,10 +519,6 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      console.log(
-        'localStream capture =>',
-        localStream ? localStream.toURL() : ''
-      );
       if (viewShot.current != null) {
         viewShot.current.capture().then(
           //callback function to get the result URL of the screenshot
