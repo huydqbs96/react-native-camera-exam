@@ -259,7 +259,7 @@ export const postForm = async (
     );
 
     if (
-      responseJson.data.result
+      responseJson.data
       // !responseJson.data.result &&
       // (responseJson.data.code === 401 || responseJson.data.message === 403)
     ) {
@@ -269,7 +269,8 @@ export const postForm = async (
         clientId,
         clientSecret
       );
-      if (!refreshResult/*refreshResult*/) {
+      console.log('refreshResult', refreshResult);
+      if (refreshResult /*refreshResult*/) {
         return postForm(
           url,
           data,
