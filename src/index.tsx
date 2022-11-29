@@ -346,15 +346,6 @@ export function CameraView(propCamera: CameraType) {
         clientSecret,
         logOutFunc
       );
-      // await axios({
-      //   method: 'GET',
-      //   url: urlSystem,
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Accept': 'application/json',
-      //     'Authorization': `Bearer ${accessToken}`,
-      //   },
-      // });
       console.log('reponse api presigned => ', response.data);
 
       /**
@@ -381,15 +372,6 @@ export function CameraView(propCamera: CameraType) {
         false,
         logOutFunc
       );
-      // await axios({
-      //   method: 'POST',
-      //   url: response.data.url,
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //     'Accept': '*/*',
-      //   },
-      //   data: formData,
-      // });
       console.log('reponse api => ', responseS3.status);
 
       /**
@@ -440,16 +422,6 @@ export function CameraView(propCamera: CameraType) {
             logOutFunc
           );
           console.log('resSendUrl => ', resSendUrl.data);
-          // await axios({
-          //   method: 'POST',
-          //   url: urlPostS3Url,
-          //   headers: {
-          //     'Content-Type': 'multipart/form-data',
-          //     'Accept': '*/*',
-          //     'Authorization': `Bearer ${accessToken}`,
-          //   },
-          //   data: formData,
-          // });
         } catch (error: any) {
           console.log('error send url to server => ', error.response);
           if (timeCall <= 3) {

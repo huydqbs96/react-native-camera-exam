@@ -255,7 +255,7 @@ export const postForm = async (
 
     console.log(
       'response postForm => ',
-      responseJson.data + '---' + responseJson.status
+      JSON.stringify(responseJson.data) + '---' + responseJson.status
     );
 
     if (
