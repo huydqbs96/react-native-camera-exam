@@ -36,8 +36,10 @@ export const refreshToken = async (
       data: body,
     });
 
-    if (responseJson.data.result) {
-      return responseJson.data.result;
+    console.log('refreshResult', responseJson);
+
+    if (responseJson.data) {
+      return responseJson.data;
     } else {
       return null;
     }
@@ -90,10 +92,7 @@ export const post = async (
       responseJson.data + '---' + responseJson.status
     );
 
-    if (
-      !responseJson.data.result &&
-      (responseJson.data.message === 401 || responseJson.data.message === 403)
-    ) {
+    if (!responseJson.data && responseJson.status === 401) {
       let refreshResult = await refreshToken(
         refresh_token,
         urlRefreshToken,
@@ -174,10 +173,7 @@ export const get = async (
       responseJson.data + '---' + responseJson.status
     );
 
-    if (
-      !responseJson.data.result &&
-      (responseJson.data.message === 401 || responseJson.data.message === 403)
-    ) {
+    if (!responseJson.data && responseJson.status === 401) {
       let refreshResult = await refreshToken(
         refresh_token,
         urlRefreshToken,
@@ -258,19 +254,15 @@ export const postForm = async (
       JSON.stringify(responseJson.data) + '---' + responseJson.status
     );
 
-    if (
-      responseJson.data
-      // !responseJson.data.result &&
-      // (responseJson.data.code === 401 || responseJson.data.message === 403)
-    ) {
+    if (!responseJson.data && responseJson.status === 401) {
       let refreshResult = await refreshToken(
         refresh_token,
         urlRefreshToken,
         clientId,
         clientSecret
       );
-      console.log('refreshResult', refreshResult);
-      if (refreshResult /*refreshResult*/) {
+      
+      if (refreshResult) {
         return postForm(
           url,
           data,
