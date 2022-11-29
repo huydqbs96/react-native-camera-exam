@@ -76,7 +76,7 @@ export function CameraView(propCamera: CameraType) {
   const isAndroid = Platform.OS == 'android';
 
   const [localStream, setStream] = useState<any>(null);
-  const [token, setNewToken] = useState();
+  const [token, setNewToken] = useState(accessToken);
 
   const propsVideo = {
     objectFit: 'cover',
@@ -87,8 +87,8 @@ export function CameraView(propCamera: CameraType) {
 
   useEffect(() => {
     setNewToken(accessToken);
-    console.log('timeCapture', timeCapture)
-    console.log('accessToken', accessToken)
+    console.log('timeCapture', timeCapture);
+    console.log('accessToken', accessToken);
   }, [accessToken, timeCapture]);
 
   useEffect(() => {
@@ -386,26 +386,34 @@ export function CameraView(propCamera: CameraType) {
           }
         }
         console.log('Your generated pre-signed URL is', url);
-        var formData = new FormData();
-        formData.append('examKey', examId);
-        formData.append('image_url', url);
-        formData.append('room_id', roomId);
-        formData.append('user_id', userId);
-        let resSendUrl = await axios({
-          method: 'POST',
-          url: urlPostS3Url,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Accept': '*/*',
-            'Authorization': `Bearer ${accessToken}`,
-          },
-          data: formData,
-        });
+        try {
+          var formData = new FormData();
+          formData.append('examKey', examId);
+          formData.append('image_url', url);
+          formData.append('room_id', roomId);
+          formData.append('user_id', userId);
+          let resSendUrl = await axios({
+            method: 'POST',
+            url: urlPostS3Url,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'Accept': '*/*',
+              'Authorization': `Bearer ${accessToken}`,
+            },
+            data: formData,
+          });
+        } catch (error) {
+          console.log('error urlPostS3Url => ', error.response);
+          if (timeCall <= 3) {
+            pushImage(uriImage, nameFile, timeCall + 1);
+          } else {
+            logError(error.response);
+          }
+        }
         console.log('resSendUrl => ', resSendUrl.data);
       });
     } catch (e: any) {
       console.log('error => ', e.response);
-      startStreamLocal();
       if (timeCall <= 3) {
         pushImage(uriImage, nameFile, timeCall + 1);
       } else {
@@ -437,7 +445,6 @@ export function CameraView(propCamera: CameraType) {
       });
       console.log('reponse api log error => ', response.data);
     } catch (e) {
-      startStreamLocal();
       console.log('error log => ', e);
     }
   };
