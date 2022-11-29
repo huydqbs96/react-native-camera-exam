@@ -259,8 +259,9 @@ export const postForm = async (
     );
 
     if (
-      !responseJson.data.result &&
-      (responseJson.data.code === 401 || responseJson.data.message === 403)
+      responseJson.data.result
+      // !responseJson.data.result &&
+      // (responseJson.data.code === 401 || responseJson.data.message === 403)
     ) {
       let refreshResult = await refreshToken(
         refresh_token,
@@ -268,7 +269,7 @@ export const postForm = async (
         clientId,
         clientSecret
       );
-      if (refreshResult) {
+      if (!refreshResult/*refreshResult*/) {
         return postForm(
           url,
           data,
