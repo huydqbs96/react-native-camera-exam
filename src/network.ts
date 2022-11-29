@@ -63,7 +63,7 @@ export const post = async (
   urlRefreshToken: string,
   clientId: string,
   clientSecret: string,
-  logOutFunc: () => {}
+  logOutFunc: () => void
 ): Promise<any> => {
   if (await checkInternetConnection()) {
     alertPresent = false;
@@ -143,7 +143,7 @@ export const get = async (
   urlRefreshToken: string,
   clientId: string,
   clientSecret: string,
-  logOutFunc: () => {}
+  logOutFunc: () => void
 ): Promise<any> => {
   if (await checkInternetConnection()) {
     alertPresent = false;
@@ -221,7 +221,7 @@ export const postForm = async (
   clientId: string,
   clientSecret: string,
   isNoneAuth = true,
-  logOutFunc: () => {}
+  logOutFunc: () => void
 ): Promise<any> => {
   if (await checkInternetConnection()) {
     alertPresent = false;

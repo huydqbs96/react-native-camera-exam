@@ -46,7 +46,7 @@ type CameraType = {
   clientId: string; // client id proctor
   clientSecret: string; // client secret proctor
   urlRefreshToken: string; //url get new accesstoken using refreshtoken
-  logOutFunc: () => {}; // call function logout when refresh token expired
+  logOutFunc: () => void; // call function logout when refresh token expired
 };
 
 const isIOS: boolean = Platform.OS === 'ios';
