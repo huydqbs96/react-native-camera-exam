@@ -76,6 +76,7 @@ export function CameraView(propCamera: CameraType) {
   const isAndroid = Platform.OS == 'android';
 
   const [localStream, setStream] = useState<any>(null);
+  const [token, setNewToken] = useState();
 
   const propsVideo = {
     objectFit: 'cover',
@@ -83,6 +84,10 @@ export function CameraView(propCamera: CameraType) {
     style: { width: width, height: height },
     mirror: true,
   };
+
+  useEffect(() => {
+    setNewToken(accessToken);
+  }, [accessToken, timeCapture]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
