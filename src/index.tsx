@@ -399,38 +399,8 @@ export function CameraView(propCamera: CameraType) {
             logError(err);
           }
         }
+        callApiUploadUrl(url, timeCall);
         console.log('Your generated pre-signed URL is', url);
-
-        /**
-         * * start call api upload url preview image to server
-         */
-        try {
-          var formData = new FormData();
-          formData.append('examKey', examId);
-          formData.append('image_url', url);
-          formData.append('room_id', roomId);
-          formData.append('user_id', userId);
-          let resSendUrl = await postForm(
-            urlPostS3Url,
-            formData,
-            accessToken,
-            refreshToken,
-            urlRefreshToken,
-            clientId,
-            clientSecret,
-            true,
-            logOutFunc
-          );
-          console.log('resSendUrl => ', resSendUrl.data);
-        } catch (error: any) {
-          console.log('error send url to server => ', error.response);
-          if (timeCall <= 3) {
-            pushImage(uriImage, nameFile, timeCall + 1);
-          } else {
-            logError(error.response);
-          }
-        }
-        //* * end call api upload url preview image
       });
     } catch (e: any) {
       console.log('error => ', e.response);
@@ -447,13 +417,48 @@ export function CameraView(propCamera: CameraType) {
   };
 
   /**
+   * start call api upload url preview image to server
+   * @param timeCall the number of times retry to re-upload the url
+   * @param urlS3 url image preview return from s3
+   */
+  const callApiUploadUrl = (urlS3: string, timeCall: number) => {
+    try {
+      var formData = new FormData();
+      formData.append('examKey1', examId);
+      formData.append('image_url', urlS3);
+      formData.append('room_id', roomId);
+      formData.append('user_id', userId);
+      console.log('formdata => ', formData);
+      let resSendUrl = await postForm(
+        urlPostS3Url,
+        formData,
+        accessToken,
+        refreshToken,
+        urlRefreshToken,
+        clientId,
+        clientSecret,
+        true,
+        logOutFunc
+      );
+      console.log('resSendUrl => ', resSendUrl.data);
+    } catch (error: any) {
+      console.log('error send url to server => ', error.response);
+      if (timeCall <= 3) {
+        callApiUploadUrl(urlS3, timeCall + 1);
+      } else {
+        logError(error.response, imageUrl);
+      }
+    }
+  };
+
+  /**
    * log error when upload image error after 3 times
    * @param error error when upload image
    */
-  const logError = async (error: any) => {
+  const logError = async (error: any, imageUrl?: string) => {
     setUriImage('');
     const body = {
-      info: `{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}`,
+      info: `{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}, "image_url": ${imageUrl}`,
       message: error,
     };
     console.log('body log err: ', body);
