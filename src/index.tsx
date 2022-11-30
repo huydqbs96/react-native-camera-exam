@@ -421,7 +421,7 @@ export function CameraView(propCamera: CameraType) {
    * @param timeCall the number of times retry to re-upload the url
    * @param urlS3 url image preview return from s3
    */
-  const callApiUploadUrl = (urlS3: string, timeCall: number) => {
+  const callApiUploadUrl = async (urlS3: string, timeCall: number) => {
     try {
       var formData = new FormData();
       formData.append('examKey1', examId);
@@ -446,7 +446,7 @@ export function CameraView(propCamera: CameraType) {
       if (timeCall <= 3) {
         callApiUploadUrl(urlS3, timeCall + 1);
       } else {
-        logError(error.response, imageUrl);
+        logError(error.response, urlS3);
       }
     }
   };
@@ -455,10 +455,10 @@ export function CameraView(propCamera: CameraType) {
    * log error when upload image error after 3 times
    * @param error error when upload image
    */
-  const logError = async (error: any, imageUrl?: string) => {
+  const logError = async (error: any, urlS3?: string) => {
     setUriImage('');
     const body = {
-      info: `{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}, "image_url": ${imageUrl}`,
+      info: `{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}, "image_url": ${urlS3}`,
       message: error,
     };
     console.log('body log err: ', body);
