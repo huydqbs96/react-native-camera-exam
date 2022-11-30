@@ -399,7 +399,7 @@ export function CameraView(propCamera: CameraType) {
             logError(err);
           }
         }
-        callApiUploadUrl(url, timeCall);
+        await callApiUploadUrl(url, timeCall);
         console.log('Your generated pre-signed URL is', url);
       });
     } catch (e: any) {
@@ -424,11 +424,11 @@ export function CameraView(propCamera: CameraType) {
   const callApiUploadUrl = async (urlS3: string, timeCall: number) => {
     try {
       var formData = new FormData();
-      formData.append('examKey1', examId);
+      formData.append('examKey', examId);
       formData.append('image_url', urlS3);
       formData.append('room_id', roomId);
       formData.append('user_id', userId);
-      console.log('formdata => ', formData);
+      console.log('formdata callApiUploadUrl => ', formData);
       let resSendUrl = await postForm(
         urlPostS3Url,
         formData,
