@@ -393,7 +393,7 @@ export function CameraView(propCamera: CameraType) {
         if (err) {
           console.log('error when get preview image url  => ', err);
           startStreamLocal();
-          if (timeCall <= 3) {
+          if (timeCall < 4) {
             pushImage(uriImage, nameFile, timeCall + 1);
           } else {
             logError(err);
@@ -408,7 +408,7 @@ export function CameraView(propCamera: CameraType) {
        * retry upload image 3 time when has error
        * if still have error then call api log error
        */
-      if (timeCall <= 3) {
+      if (timeCall < 4) {
         pushImage(uriImage, nameFile, timeCall + 1);
       } else {
         logError(e.response);
@@ -443,7 +443,7 @@ export function CameraView(propCamera: CameraType) {
       console.log('resSendUrl => ', resSendUrl.data);
     } catch (error: any) {
       console.log('error send url to server => ', error.response);
-      if (timeCall <= 3) {
+      if (timeCall < 4) {
         callApiUploadUrl(urlS3, timeCall + 1);
       } else {
         logError(error.response, urlS3);
