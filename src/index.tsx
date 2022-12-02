@@ -167,7 +167,7 @@ export function CameraView(propCamera: CameraType) {
     return () => {
       stopStreamLocal();
     };
-  }, [permissionCamera, localStream, appStateVisible]);
+  }, [permissionCamera, localStream, appStateVisible == 'active']);
 
   const stopStreamLocal = () => {
     if (localStream) {
