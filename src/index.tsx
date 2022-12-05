@@ -126,7 +126,7 @@ export function CameraView(propCamera: CameraType) {
         clearInterval(interval.current);
       }
     };
-  }, [permissionCamera, uriImage]);
+  }, [permissionCamera, uriImage, appStateVisible == 'active']);
 
   useEffect(() => {
     if (uriImage != null && uriImage != '' && !uriImage.includes('undefined')) {
@@ -393,7 +393,7 @@ export function CameraView(propCamera: CameraType) {
         if (err) {
           console.log('error when get preview image url  => ', err);
           startStreamLocal();
-          if (timeCall < 4) {
+          if (timeCall <= 4) {
             pushImage(uriImage, nameFile, timeCall + 1);
           } else {
             logError(err);
@@ -408,7 +408,7 @@ export function CameraView(propCamera: CameraType) {
        * retry upload image 3 time when has error
        * if still have error then call api log error
        */
-      if (timeCall < 4) {
+      if (timeCall <= 4) {
         pushImage(uriImage, nameFile, timeCall + 1);
       } else {
         logError(e.response);
@@ -443,7 +443,7 @@ export function CameraView(propCamera: CameraType) {
       console.log('resSendUrl => ', resSendUrl.data);
     } catch (error: any) {
       console.log('error send url to server => ', error.response);
-      if (timeCall < 4) {
+      if (timeCall <= 4) {
         callApiUploadUrl(urlS3, timeCall + 1);
       } else {
         logError(error.response, urlS3);
@@ -475,16 +475,6 @@ export function CameraView(propCamera: CameraType) {
         clientSecret,
         logOutFunc
       );
-      // await axios({
-      //   method: 'POST',
-      //   url: urlLogErr,
-      //   headers: {
-      //     'Content-Type': 'application/x-www-form-urlencoded',
-      //     'Accept': '*/*',
-      //     'Authorization': `Bearer ${accessToken}`,
-      //   },
-      //   data: body,
-      // });
       console.log('reponse api log error => ', response.data);
     } catch (e) {
       console.log('error log => ', e);
@@ -496,7 +486,7 @@ export function CameraView(propCamera: CameraType) {
    */
   const takePhotoAuto = async () => {
     try {
-      if (viewShot.current != null) {
+      if (viewShot.current != null && appStateVisible == 'active') {
         viewShot.current.capture().then(
           //callback function to get the result URL of the screenshot
           (uri: string) => {
