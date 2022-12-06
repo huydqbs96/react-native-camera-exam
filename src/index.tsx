@@ -356,6 +356,7 @@ export function CameraView(propCamera: CameraType) {
       formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
       formData.append('policy', response.data.fields.policy);
       formData.append('signature', response.data.fields.signature);
+      // formData.append('ACL', 'public-read');
       formData.append('file', {
         uri: uriImage,
         type: 'image/png',
@@ -370,6 +371,7 @@ export function CameraView(propCamera: CameraType) {
         clientId,
         clientSecret,
         false,
+        true,
         logOutFunc
       );
       console.log('reponse api => ', responseS3.status);
