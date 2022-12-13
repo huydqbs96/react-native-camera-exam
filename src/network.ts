@@ -87,11 +87,6 @@ export const post = async (
       data: body,
     });
 
-    console.log(
-      'response post => ',
-      responseJson.data + '---' + responseJson.status
-    );
-
     if (!responseJson.data && responseJson.status === 401) {
       let refreshResult = await refreshToken(
         refresh_token,
@@ -167,11 +162,6 @@ export const get = async (
       url: url,
       headers: headers,
     });
-
-    console.log(
-      'response get => ',
-      responseJson.data + '---' + responseJson.status
-    );
 
     if (!responseJson.data && responseJson.status === 401) {
       let refreshResult = await refreshToken(
@@ -257,11 +247,6 @@ export const postForm = async (
             },
       data: data,
     });
-
-    console.log(
-      'response postForm => ',
-      JSON.stringify(responseJson.data) + '---' + responseJson.status
-    );
 
     if (!responseJson.data && responseJson.status === 401) {
       let refreshResult = await refreshToken(

@@ -426,10 +426,8 @@ export function CameraView(propCamera: CameraType) {
   const callApiUploadUrl = async (urlS3: string, timeCall: number) => {
     try {
       var formData = new FormData();
-      formData.append('examKey', examId);
       formData.append('image_url', urlS3);
       formData.append('room_id', roomId);
-      formData.append('user_id', userId);
       console.log('formdata callApiUploadUrl => ', formData);
       let resSendUrl = await postForm(
         urlPostS3Url,
@@ -460,7 +458,7 @@ export function CameraView(propCamera: CameraType) {
   const logError = async (error: any, urlS3?: string) => {
     setUriImage('');
     const body = {
-      info: `{"user_id": ${userId}, "exam_id": ${examId}, "room_id": ${roomId}}, "image_url": ${urlS3}`,
+      info: `{"exam_id": ${examId}, "room_id": ${roomId}}, "image_url": ${urlS3}`,
       message: error,
     };
     console.log('body log err: ', body);
