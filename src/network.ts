@@ -38,7 +38,7 @@ export const refreshToken = async (
 
     console.log('refreshResult', responseJson);
 
-    if (responseJson.data) {
+    if (responseJson.status == 200) {
       return responseJson.data;
     } else {
       return null;
@@ -87,7 +87,11 @@ export const post = async (
       data: body,
     });
 
-    if (!responseJson.data && responseJson.status === 401) {
+    if (
+      responseJson.status === 401 &&
+      responseJson?.data?.message !=
+        'あなたのアカウントは他の端末でログインされました'
+    ) {
       let refreshResult = await refreshToken(
         refresh_token,
         urlRefreshToken,
@@ -121,6 +125,19 @@ export const post = async (
           ]
         );
       }
+    } else if (
+      responseJson.status === 401 &&
+      responseJson?.data?.message ==
+        'あなたのアカウントは他の端末でログインされました'
+    ) {
+      Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
+        {
+          text: 'Ok',
+          onPress: () => {
+            logOutFunc();
+          },
+        },
+      ]);
     } else {
       return responseJson;
     }
@@ -163,7 +180,11 @@ export const get = async (
       headers: headers,
     });
 
-    if (!responseJson.data && responseJson.status === 401) {
+    if (
+      responseJson.status === 401 &&
+      responseJson?.data?.message !=
+        'あなたのアカウントは他の端末でログインされました'
+    ) {
       let refreshResult = await refreshToken(
         refresh_token,
         urlRefreshToken,
@@ -195,6 +216,19 @@ export const get = async (
           ]
         );
       }
+    } else if (
+      responseJson.status === 401 &&
+      responseJson?.data?.message ==
+        'あなたのアカウントは他の端末でログインされました'
+    ) {
+      Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
+        {
+          text: 'Ok',
+          onPress: () => {
+            logOutFunc();
+          },
+        },
+      ]);
     } else {
       return responseJson;
     }
@@ -248,7 +282,11 @@ export const postForm = async (
       data: data,
     });
 
-    if (!responseJson.data && responseJson.status === 401) {
+    if (
+      responseJson.status === 401 &&
+      responseJson?.data?.message !=
+        'あなたのアカウントは他の端末でログインされました'
+    ) {
       let refreshResult = await refreshToken(
         refresh_token,
         urlRefreshToken,
@@ -283,6 +321,19 @@ export const postForm = async (
           ]
         );
       }
+    } else if (
+      responseJson.status === 401 &&
+      responseJson?.data?.message ==
+        'あなたのアカウントは他の端末でログインされました'
+    ) {
+      Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
+        {
+          text: 'Ok',
+          onPress: () => {
+            logOutFunc();
+          },
+        },
+      ]);
     } else {
       return responseJson;
     }
