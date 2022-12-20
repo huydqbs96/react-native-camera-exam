@@ -87,6 +87,11 @@ export const post = async (
       data: body,
     });
 
+    console.log(
+      'responseJson => ',
+      responseJson.status + '===' + responseJson?.data
+    );
+
     if (
       responseJson.status === 401 &&
       responseJson?.data?.message !=
@@ -179,6 +184,11 @@ export const get = async (
       url: url,
       headers: headers,
     });
+
+    console.log(
+      'responseJson => ',
+      responseJson.status + '===' + responseJson?.data
+    );
 
     if (
       responseJson.status === 401 &&
@@ -281,6 +291,11 @@ export const postForm = async (
             },
       data: data,
     });
+
+    console.log(
+      'responseJson => ',
+      responseJson.status + '===' + responseJson?.data
+    );
 
     if (
       responseJson.status === 401 &&
