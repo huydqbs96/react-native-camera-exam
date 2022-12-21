@@ -16,31 +16,30 @@ export const refreshToken = async (
   clientSecret: string
 ) => {
   if (await checkInternetConnection()) {
-    alertPresent = false;
-    if (!refresh_token) {
-      return false;
-    }
-    const body = {
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: clientId,
-      client_secret: clientSecret,
-    };
-    const headers: AxiosRequestHeaders = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    };
-    let responseJson = await axios({
-      method: 'POST',
-      url: urlRefreshToken,
-      headers: headers,
-      data: body,
-    });
+    try {
+      // alertPresent = false;
+      if (!refresh_token) {
+        return false;
+      }
+      const body = {
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: clientId,
+        client_secret: clientSecret,
+      };
+      const headers: AxiosRequestHeaders = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
+      let responseJson = await axios({
+        method: 'POST',
+        url: urlRefreshToken,
+        headers: headers,
+        data: body,
+      });
 
-    console.log('refreshResult', responseJson);
-
-    if (responseJson.status == 200) {
+      console.log('refreshResult', responseJson);
       return responseJson.data;
-    } else {
+    } catch (error) {
       return null;
     }
   } else {
@@ -48,7 +47,15 @@ export const refreshToken = async (
       alertPresent = true;
       Alert.alert(
         '',
-        'サーバーへ接続出来ません。\nインターネット接続を確認してください。'
+        'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
+        [
+          {
+            text: 'Ok',
+            onPress: () => {
+              alertPresent = false;
+            },
+          },
+        ]
       );
     }
     return null;
@@ -69,7 +76,7 @@ export const post = async (
 ): Promise<any> => {
   if (await checkInternetConnection()) {
     try {
-      alertPresent = false;
+      // alertPresent = false;
       let headers: AxiosRequestHeaders = isNoneAuth
         ? {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -120,32 +127,40 @@ export const post = async (
             logOutFunc
           );
         } else {
-          Alert.alert(
-            '',
-            'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
-            [
-              {
-                text: 'Ok',
-                onPress: () => {
-                  logOutFunc();
+          if (!alertPresent) {
+            alertPresent = true;
+            Alert.alert(
+              '',
+              'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
+              [
+                {
+                  text: 'Ok',
+                  onPress: () => {
+                    alertPresent = false;
+                    logOutFunc();
+                  },
                 },
-              },
-            ]
-          );
+              ]
+            );
+          }
         }
       } else if (
         error?.response?.status === 401 &&
         error?.response?.data?.message ==
           'あなたのアカウントは他の端末でログインされました'
       ) {
-        Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
-          {
-            text: 'Ok',
-            onPress: () => {
-              logOutFunc();
+        if (!alertPresent) {
+          alertPresent = true;
+          Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
+            {
+              text: 'Ok',
+              onPress: () => {
+                alertPresent = false;
+                logOutFunc();
+              },
             },
-          },
-        ]);
+          ]);
+        }
       }
     }
   } else {
@@ -153,7 +168,15 @@ export const post = async (
       alertPresent = true;
       Alert.alert(
         '',
-        'サーバーへ接続出来ません。\nインターネット接続を確認してください。'
+        'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
+        [
+          {
+            text: 'Ok',
+            onPress: () => {
+              alertPresent = false;
+            },
+          },
+        ]
       );
     }
   }
@@ -171,7 +194,7 @@ export const get = async (
 ): Promise<any> => {
   if (await checkInternetConnection()) {
     try {
-      alertPresent = false;
+      // alertPresent = false;
       let headers: AxiosRequestHeaders = isNoneAuth
         ? {
             'Content-Type': 'application/json',
@@ -219,32 +242,40 @@ export const get = async (
             logOutFunc
           );
         } else {
-          Alert.alert(
-            '',
-            'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
-            [
-              {
-                text: 'Ok',
-                onPress: () => {
-                  logOutFunc();
+          if (!alertPresent) {
+            alertPresent = true;
+            Alert.alert(
+              '',
+              'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
+              [
+                {
+                  text: 'Ok',
+                  onPress: () => {
+                    alertPresent = false;
+                    logOutFunc();
+                  },
                 },
-              },
-            ]
-          );
+              ]
+            );
+          }
         }
       } else if (
         error?.response?.status === 401 &&
         error?.response?.data?.message ==
           'あなたのアカウントは他の端末でログインされました'
       ) {
-        Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
-          {
-            text: 'Ok',
-            onPress: () => {
-              logOutFunc();
+        if (!alertPresent) {
+          alertPresent = true;
+          Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
+            {
+              text: 'Ok',
+              onPress: () => {
+                alertPresent = false;
+                logOutFunc();
+              },
             },
-          },
-        ]);
+          ]);
+        }
       }
     }
   } else {
@@ -252,7 +283,15 @@ export const get = async (
       alertPresent = true;
       Alert.alert(
         '',
-        'サーバーへ接続出来ません。\nインターネット接続を確認してください。'
+        'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
+        [
+          {
+            text: 'Ok',
+            onPress: () => {
+              alertPresent = false;
+            },
+          },
+        ]
       );
     }
   }
@@ -272,7 +311,7 @@ export const postForm = async (
 ): Promise<any> => {
   if (await checkInternetConnection()) {
     try {
-      alertPresent = false;
+      // alertPresent = false;
 
       let responseJson = await axios({
         method: 'POST',
@@ -331,32 +370,40 @@ export const postForm = async (
             logOutFunc
           );
         } else {
-          Alert.alert(
-            '',
-            'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
-            [
-              {
-                text: 'Ok',
-                onPress: () => {
-                  logOutFunc();
+          if (!alertPresent) {
+            alertPresent = true;
+            Alert.alert(
+              '',
+              'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
+              [
+                {
+                  text: 'Ok',
+                  onPress: () => {
+                    alertPresent = false;
+                    logOutFunc();
+                  },
                 },
-              },
-            ]
-          );
+              ]
+            );
+          }
         }
       } else if (
         error?.response?.status === 401 &&
         error?.response?.data?.message ==
           'あなたのアカウントは他の端末でログインされました'
       ) {
-        Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
-          {
-            text: 'Ok',
-            onPress: () => {
-              logOutFunc();
+        if (!alertPresent) {
+          alertPresent = true;
+          Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
+            {
+              text: 'Ok',
+              onPress: () => {
+                alertPresent = false;
+                logOutFunc();
+              },
             },
-          },
-        ]);
+          ]);
+        }
       }
     }
   } else {
@@ -364,7 +411,15 @@ export const postForm = async (
       alertPresent = true;
       Alert.alert(
         '',
-        'サーバーへ接続出来ません。\nインターネット接続を確認してください。'
+        'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
+        [
+          {
+            text: 'Ok',
+            onPress: () => {
+              alertPresent = false;
+            },
+          },
+        ]
       );
     }
   }
