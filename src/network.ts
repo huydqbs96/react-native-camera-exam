@@ -68,83 +68,85 @@ export const post = async (
   logOutFunc: () => void
 ): Promise<any> => {
   if (await checkInternetConnection()) {
-    alertPresent = false;
-    let headers: AxiosRequestHeaders = isNoneAuth
-      ? {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': '*/*',
-          'Authorization': `Bearer ${access_token}`,
-        }
-      : {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': '*/*',
-        };
+    try {
+      alertPresent = false;
+      let headers: AxiosRequestHeaders = isNoneAuth
+        ? {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': '*/*',
+            'Authorization': `Bearer ${access_token}`,
+          }
+        : {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': '*/*',
+          };
 
-    let responseJson = await axios({
-      method: 'POST',
-      url: url,
-      headers: headers,
-      data: body,
-    });
+      let responseJson = await axios({
+        method: 'POST',
+        url: url,
+        headers: headers,
+        data: body,
+      });
 
-    console.log(
-      'responseJson => ',
-      responseJson.status + '===' + responseJson?.data
-    );
-
-    if (
-      responseJson.status === 401 &&
-      responseJson?.data?.message !=
-        'あなたのアカウントは他の端末でログインされました'
-    ) {
-      let refreshResult = await refreshToken(
-        refresh_token,
-        urlRefreshToken,
-        clientId,
-        clientSecret
+      console.log(
+        'responseJson => ',
+        responseJson.status + '===' + responseJson?.data
       );
-      if (refreshResult) {
-        return post(
-          url,
-          body,
-          isNoneAuth,
-          isLogout,
-          access_token,
+      return responseJson;
+    } catch (error: any) {
+      console.log('error post => ', error?.response);
+      if (
+        error?.response?.status === 401 &&
+        error?.response?.data?.message !=
+          'あなたのアカウントは他の端末でログインされました'
+      ) {
+        let refreshResult = await refreshToken(
           refresh_token,
           urlRefreshToken,
           clientId,
-          clientSecret,
-          logOutFunc
+          clientSecret
         );
-      } else {
-        Alert.alert(
-          '',
-          'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
-          [
-            {
-              text: 'Ok',
-              onPress: () => {
-                logOutFunc();
+        if (refreshResult) {
+          return post(
+            url,
+            body,
+            isNoneAuth,
+            isLogout,
+            access_token,
+            refresh_token,
+            urlRefreshToken,
+            clientId,
+            clientSecret,
+            logOutFunc
+          );
+        } else {
+          Alert.alert(
+            '',
+            'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
+            [
+              {
+                text: 'Ok',
+                onPress: () => {
+                  logOutFunc();
+                },
               },
+            ]
+          );
+        }
+      } else if (
+        error?.response?.status === 401 &&
+        error?.response?.data?.message ==
+          'あなたのアカウントは他の端末でログインされました'
+      ) {
+        Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
+          {
+            text: 'Ok',
+            onPress: () => {
+              logOutFunc();
             },
-          ]
-        );
-      }
-    } else if (
-      responseJson.status === 401 &&
-      responseJson?.data?.message ==
-        'あなたのアカウントは他の端末でログインされました'
-    ) {
-      Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
-        {
-          text: 'Ok',
-          onPress: () => {
-            logOutFunc();
           },
-        },
-      ]);
-    } else {
-      return responseJson;
+        ]);
+      }
     }
   } else {
     if (!alertPresent) {
@@ -168,79 +170,82 @@ export const get = async (
   logOutFunc: () => void
 ): Promise<any> => {
   if (await checkInternetConnection()) {
-    alertPresent = false;
-    let headers: AxiosRequestHeaders = isNoneAuth
-      ? {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${access_token}`,
-        }
-      : {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        };
-    let responseJson = await axios({
-      method: 'GET',
-      url: url,
-      headers: headers,
-    });
+    try {
+      alertPresent = false;
+      let headers: AxiosRequestHeaders = isNoneAuth
+        ? {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${access_token}`,
+          }
+        : {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          };
+      let responseJson = await axios({
+        method: 'GET',
+        url: url,
+        headers: headers,
+      });
 
-    console.log(
-      'responseJson => ',
-      responseJson.status + '===' + responseJson?.data
-    );
-
-    if (
-      responseJson.status === 401 &&
-      responseJson?.data?.message !=
-        'あなたのアカウントは他の端末でログインされました'
-    ) {
-      let refreshResult = await refreshToken(
-        refresh_token,
-        urlRefreshToken,
-        clientId,
-        clientSecret
+      console.log(
+        'responseJson => ',
+        responseJson.status + '===' + responseJson?.data
       );
-      if (refreshResult) {
-        return get(
-          url,
-          isNoneAuth,
-          refreshResult.access_token,
-          refreshResult.refresh_token,
+
+      return responseJson;
+    } catch (error: any) {
+      console.log('error get => ', error?.response);
+      if (
+        error?.response?.status === 401 &&
+        error?.response?.data?.message !=
+          'あなたのアカウントは他の端末でログインされました'
+      ) {
+        let refreshResult = await refreshToken(
+          refresh_token,
           urlRefreshToken,
           clientId,
-          clientSecret,
-          logOutFunc
+          clientSecret
         );
-      } else {
-        Alert.alert(
-          '',
-          'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
-          [
-            {
-              text: 'Ok',
-              onPress: () => {
-                logOutFunc();
+        if (refreshResult) {
+          return get(
+            url,
+            isNoneAuth,
+            refreshResult.access_token,
+            refreshResult.refresh_token,
+            urlRefreshToken,
+            clientId,
+            clientSecret,
+            logOutFunc
+          );
+        } else {
+          Alert.alert(
+            '',
+            'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
+            [
+              {
+                text: 'Ok',
+                onPress: () => {
+                  logOutFunc();
+                },
               },
+            ]
+          );
+        }
+      } else if (
+        error?.response?.status === 401 &&
+        error?.response?.data?.message ==
+          'あなたのアカウントは他の端末でログインされました'
+      ) {
+        Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
+          {
+            text: 'Ok',
+            onPress: () => {
+              logOutFunc();
             },
-          ]
-        );
-      }
-    } else if (
-      responseJson.status === 401 &&
-      responseJson?.data?.message ==
-        'あなたのアカウントは他の端末でログインされました'
-    ) {
-      Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
-        {
-          text: 'Ok',
-          onPress: () => {
-            logOutFunc();
           },
-        },
-      ]);
-    } else {
-      return responseJson;
+        ]);
+      }
     }
   } else {
     if (!alertPresent) {
@@ -266,91 +271,93 @@ export const postForm = async (
   logOutFunc: () => void
 ): Promise<any> => {
   if (await checkInternetConnection()) {
-    alertPresent = false;
+    try {
+      alertPresent = false;
 
-    let responseJson = await axios({
-      method: 'POST',
-      url: url,
-      headers:
-        isNoneAuth && !isPublic
-          ? {
-              'Content-Type': 'multipart/form-data',
-              'Accept': '*/*',
-              'Authorization': `Bearer ${access_token}`,
-            }
-          : isNoneAuth && isPublic
-          ? {
-              'Content-Type': 'multipart/form-data',
-              'Accept': '*/*',
-              'Authorization': `Bearer ${access_token}`,
-              'x-amz-acl': 'public-read',
-            }
-          : {
-              'Content-Type': 'multipart/form-data',
-              'Accept': '*/*',
-            },
-      data: data,
-    });
+      let responseJson = await axios({
+        method: 'POST',
+        url: url,
+        headers:
+          isNoneAuth && !isPublic
+            ? {
+                'Content-Type': 'multipart/form-data',
+                'Accept': '*/*',
+                'Authorization': `Bearer ${access_token}`,
+              }
+            : isNoneAuth && isPublic
+            ? {
+                'Content-Type': 'multipart/form-data',
+                'Accept': '*/*',
+                'Authorization': `Bearer ${access_token}`,
+                'x-amz-acl': 'public-read',
+              }
+            : {
+                'Content-Type': 'multipart/form-data',
+                'Accept': '*/*',
+              },
+        data: data,
+      });
 
-    console.log(
-      'responseJson => ',
-      responseJson.status + '===' + responseJson?.data
-    );
-
-    if (
-      responseJson.status === 401 &&
-      responseJson?.data?.message !=
-        'あなたのアカウントは他の端末でログインされました'
-    ) {
-      let refreshResult = await refreshToken(
-        refresh_token,
-        urlRefreshToken,
-        clientId,
-        clientSecret
+      console.log(
+        'responseJson => ',
+        responseJson.status + '===' + responseJson?.data
       );
-
-      if (refreshResult) {
-        return postForm(
-          url,
-          data,
-          refreshResult.access_token,
-          refreshResult.refresh_token,
+      return responseJson;
+    } catch (error: any) {
+      console.log('error post form= >', error.response);
+      if (
+        error?.response?.status === 401 &&
+        error?.response?.data?.message !=
+          'あなたのアカウントは他の端末でログインされました'
+      ) {
+        let refreshResult = await refreshToken(
+          refresh_token,
           urlRefreshToken,
           clientId,
-          clientSecret,
-          isNoneAuth,
-          isPublic,
-          logOutFunc
+          clientSecret
         );
-      } else {
-        Alert.alert(
-          '',
-          'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
-          [
-            {
-              text: 'Ok',
-              onPress: () => {
-                logOutFunc();
+
+        if (refreshResult) {
+          return postForm(
+            url,
+            data,
+            refreshResult.access_token,
+            refreshResult.refresh_token,
+            urlRefreshToken,
+            clientId,
+            clientSecret,
+            isNoneAuth,
+            isPublic,
+            logOutFunc
+          );
+        } else {
+          Alert.alert(
+            '',
+            'アクセストークンの有効期限が切れました。\n再度ログインして下さい。',
+            [
+              {
+                text: 'Ok',
+                onPress: () => {
+                  logOutFunc();
+                },
               },
+            ]
+          );
+        }
+      } else if (
+        error?.response?.status === 401 &&
+        error?.response?.data?.message ==
+          'あなたのアカウントは他の端末でログインされました'
+      ) {
+        Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
+          {
+            text: 'Ok',
+            onPress: () => {
+              logOutFunc();
             },
-          ]
-        );
-      }
-    } else if (
-      responseJson.status === 401 &&
-      responseJson?.data?.message ==
-        'あなたのアカウントは他の端末でログインされました'
-    ) {
-      Alert.alert('', 'あなたのアカウントは他の端末でログインされました', [
-        {
-          text: 'Ok',
-          onPress: () => {
-            logOutFunc();
           },
-        },
-      ]);
-    } else {
-      return responseJson;
+        ]);
+      }
     }
   } else {
     if (!alertPresent) {
