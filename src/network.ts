@@ -43,21 +43,26 @@ export const refreshToken = async (
       return null;
     }
   } else {
-    if (!alertPresent) {
-      alertPresent = true;
-      Alert.alert(
-        '',
-        'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
-        [
-          {
-            text: 'Ok',
-            onPress: () => {
-              alertPresent = false;
-            },
-          },
-        ]
-      );
-    }
+    console.log(
+      'No internet => ',
+      'サーバーへ接続出来ません。\nインターネット接続を確認してください。'
+    );
+    //* uncomment if want show alert disconnect internet
+    // if (!alertPresent) {
+    //   alertPresent = true;
+    //   Alert.alert(
+    //     '',
+    //     'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
+    //     [
+    //       {
+    //         text: 'Ok',
+    //         onPress: () => {
+    //           alertPresent = false;
+    //         },
+    //       },
+    //     ]
+    //   );
+    // }
     return null;
   }
 };
@@ -79,12 +84,12 @@ export const post = async (
       // alertPresent = false;
       let headers: AxiosRequestHeaders = isNoneAuth
         ? {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
             'Accept': '*/*',
             'Authorization': `Bearer ${access_token}`,
           }
         : {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
             'Accept': '*/*',
           };
 
@@ -164,21 +169,26 @@ export const post = async (
       }
     }
   } else {
-    if (!alertPresent) {
-      alertPresent = true;
-      Alert.alert(
-        '',
-        'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
-        [
-          {
-            text: 'Ok',
-            onPress: () => {
-              alertPresent = false;
-            },
-          },
-        ]
-      );
-    }
+    console.log(
+      'No internet => ',
+      'サーバーへ接続出来ません。\nインターネット接続を確認してください。'
+    );
+    //* uncomment if want show alert disconnect internet
+    // if (!alertPresent) {
+    //   alertPresent = true;
+    //   Alert.alert(
+    //     '',
+    //     'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
+    //     [
+    //       {
+    //         text: 'Ok',
+    //         onPress: () => {
+    //           alertPresent = false;
+    //         },
+    //       },
+    //     ]
+    //   );
+    // }
   }
 };
 
@@ -279,21 +289,26 @@ export const get = async (
       }
     }
   } else {
-    if (!alertPresent) {
-      alertPresent = true;
-      Alert.alert(
-        '',
-        'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
-        [
-          {
-            text: 'Ok',
-            onPress: () => {
-              alertPresent = false;
-            },
-          },
-        ]
-      );
-    }
+    console.log(
+      'No internet => ',
+      'サーバーへ接続出来ません。\nインターネット接続を確認してください。'
+    );
+    //* uncomment if want show alert disconnect internet
+    // if (!alertPresent) {
+    //   alertPresent = true;
+    //   Alert.alert(
+    //     '',
+    //     'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
+    //     [
+    //       {
+    //         text: 'Ok',
+    //         onPress: () => {
+    //           alertPresent = false;
+    //         },
+    //       },
+    //     ]
+    //   );
+    // }
   }
 };
 
@@ -407,20 +422,25 @@ export const postForm = async (
       }
     }
   } else {
-    if (!alertPresent) {
-      alertPresent = true;
-      Alert.alert(
-        '',
-        'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
-        [
-          {
-            text: 'Ok',
-            onPress: () => {
-              alertPresent = false;
-            },
-          },
-        ]
-      );
-    }
+    console.log(
+      'No internet => ',
+      'サーバーへ接続出来ません。\nインターネット接続を確認してください。'
+    );
+    //* uncomment if want show alert disconnect internet
+    // if (!alertPresent) {
+    //   alertPresent = true;
+    //   Alert.alert(
+    //     '',
+    //     'サーバーへ接続出来ません。\nインターネット接続を確認してください。',
+    //     [
+    //       {
+    //         text: 'Ok',
+    //         onPress: () => {
+    //           alertPresent = false;
+    //         },
+    //       },
+    //     ]
+    //   );
+    // }
   }
 };
