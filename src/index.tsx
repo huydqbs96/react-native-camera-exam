@@ -459,7 +459,7 @@ export function CameraView(propCamera: CameraType) {
     setUriImage('');
     const body = {
       info: `{"exam_id": ${examId}, "room_id": ${roomId}, "image_url": ${
-        urlS3 ? `${urlS3}` : 'undefined'
+        urlS3 ? `"${urlS3}"` : 'error without image'
       }}`,
       message: error,
     };
