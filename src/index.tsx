@@ -413,7 +413,7 @@ export function CameraView(propCamera: CameraType) {
       if (timeCall <= 4) {
         pushImage(uriImage, nameFile, timeCall + 1);
       } else {
-        logError(e.response);
+        logError(e);
       }
     }
   };
@@ -446,7 +446,7 @@ export function CameraView(propCamera: CameraType) {
       if (timeCall <= 4) {
         callApiUploadUrl(urlS3, timeCall + 1);
       } else {
-        logError(error.response, urlS3);
+        logError(error, urlS3);
       }
     }
   };
@@ -458,7 +458,7 @@ export function CameraView(propCamera: CameraType) {
   const logError = async (error: any, urlS3?: string) => {
     setUriImage('');
     const body = {
-      info: `{"exam_id": ${examId}, "room_id": ${roomId}}, "image_url": ${urlS3}`,
+      info: `{"exam_id": ${examId}, "room_id": ${roomId}}, "image_url": ${urlS3}}`,
       message: error,
     };
     console.log('body log err: ', body);
