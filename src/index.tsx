@@ -458,7 +458,9 @@ export function CameraView(propCamera: CameraType) {
   const logError = async (error: any, urlS3?: string) => {
     setUriImage('');
     const body = {
-      info: `{"exam_id": ${examId}, "room_id": ${roomId}}, "image_url": ${urlS3}}`,
+      info: JSON.parse(
+        `{"exam_id": ${examId}, "room_id": ${roomId}}, "image_url": ${urlS3}}`
+      ),
       message: error,
     };
     console.log('body log err: ', body);
