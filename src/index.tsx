@@ -356,6 +356,7 @@ export function CameraView(propCamera: CameraType) {
       formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
       formData.append('policy', response.data.fields.policy);
       formData.append('signature', response.data.fields.signature);
+      console.log('data upload image', formData);
       // formData.append('ACL', 'public-read');
       formData.append('file', {
         uri: uriImage,
@@ -460,7 +461,7 @@ export function CameraView(propCamera: CameraType) {
     setUriImage('');
     const body = {
       info: `{"exam_id": ${examId}, "room_id": ${roomId}, "image_url": ${
-        urlS3 ? `"${urlS3}"` : 'error without image'
+        urlS3 ? `"${urlS3}"` : `"error without image"`
       }}`,
       message: error,
     };
