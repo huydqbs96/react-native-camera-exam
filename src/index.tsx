@@ -382,7 +382,7 @@ export function CameraView(propCamera: CameraType) {
       AWS.config.region = regionAWS;
       const s3 = new AWS.S3({
         accessKeyId: response.data.fields.AWSAccessKeyId,
-        secretAccessKey: secretAccessKey,
+        secretAccessKey: null, //secretAccessKey,
         signatureVersion: 'v4',
         region: AWS.config.region,
       });
@@ -428,6 +428,7 @@ export function CameraView(propCamera: CameraType) {
       var formData = new FormData();
       formData.append('image_url', urlS3);
       formData.append('room_id', roomId);
+      formData.append('object_name', `image_${new Date()}`);
       console.log('formdata callApiUploadUrl => ', formData);
       let resSendUrl = await postForm(
         urlPostS3Url,
