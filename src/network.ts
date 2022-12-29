@@ -358,7 +358,10 @@ export const postForm = async (
       );
       return responseJson;
     } catch (error: any) {
-      console.log('error post form= >', error.response + '---' + error.status);
+      console.log(
+        'error post form= >',
+        JSON.stringify(error.response) + '---' + error.response.status
+      );
       if (
         error?.response?.status === 401 &&
         error?.response?.data?.message !=
