@@ -353,6 +353,7 @@ export function CameraView(propCamera: CameraType) {
        */
       var formData = new FormData();
       const securityToken = response.data.fields['x-amz-security-token'];
+      console.log('securityToken', securityToken);
       formData.append('key', response.data.fields.key);
       formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
       formData.append('policy', response.data.fields.policy);
