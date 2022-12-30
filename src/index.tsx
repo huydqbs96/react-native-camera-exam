@@ -351,7 +351,7 @@ export function CameraView(propCamera: CameraType) {
        * upload image to s3 aws with presigned url
        */
       var formData = new FormData();
-      // const securityToken = response.data.fields['x-amz-security-token'];
+      const key = response.data.fields.key;
       for (const [key, value] of Object.entries(response.data.fields)) {
         console.log(`${key}: ${value}`);
         formData.append(`${key}`, `${value}`);
@@ -373,11 +373,10 @@ export function CameraView(propCamera: CameraType) {
         false,
         true,
         logOutFunc
-        // securityToken
       );
       console.log('reponse api => ', responseS3.status);
 
-      await callApiUploadUrl(timeCall);
+      await callApiUploadUrl(timeCall, key);
     } catch (e: any) {
       console.log('error => ', e.response);
       /**
@@ -397,11 +396,11 @@ export function CameraView(propCamera: CameraType) {
    * @param timeCall the number of times retry to re-upload the url
    * @param urlS3 url image preview return from s3
    */
-  const callApiUploadUrl = async (timeCall: number) => {
+  const callApiUploadUrl = async (timeCall: number, objectName: string) => {
     try {
       var formData = new FormData();
       formData.append('room_id', roomId);
-      formData.append('object_name', `image_${new Date()}`);
+      formData.append('object_name', objectName);
       console.log('formdata callApiUploadUrl => ', formData);
       let resSendUrl = await postForm(
         urlPostS3Url,
@@ -419,7 +418,7 @@ export function CameraView(propCamera: CameraType) {
     } catch (error: any) {
       console.log('error send url to server => ', error.response);
       if (timeCall <= 4) {
-        callApiUploadUrl(timeCall + 1);
+        callApiUploadUrl(timeCall + 1, objectName);
       } else {
         logError(error);
       }
