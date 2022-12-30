@@ -384,7 +384,7 @@ export function CameraView(propCamera: CameraType) {
       AWS.config.region = regionAWS;
       const s3 = new AWS.S3({
         accessKeyId: response.data.fields.AWSAccessKeyId,
-        secretAccessKey: null, //secretAccessKey,
+        secretAccessKey: secretAccessKey,
         signatureVersion: 'v4',
         region: AWS.config.region,
       });
