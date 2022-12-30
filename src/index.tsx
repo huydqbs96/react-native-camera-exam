@@ -32,15 +32,11 @@ type CameraType = {
   urlPostS3Url: string; // url send url image s3 to server
   style?: ViewStyle; // style camera view
   examId: string; // exam id
-  userId: string; // user id
   roomId: string; // room id exam
   timeCapture?: number; // timeout between each auto take picture
   widthImageSize?: number; // width size after resize image
   heightImageSize?: number; // height size after resize image
-  secretAccessKey: string; // Secret Access Key Aws
-  bucketName: string; // bucket name aws
   accessToken: string; // access token to authorization when upload tracking image
-  regionAWS: string; // region config aws
   clientId: string; // client id proctor
   clientSecret: string; // client secret proctor
   urlRefreshToken: string; //url get new accesstoken using refreshtoken
@@ -60,15 +56,11 @@ export function CameraView(propCamera: CameraType) {
     urlLogErr,
     style,
     examId = '',
-    userId = '',
     roomId,
     timeCapture = 30000,
     widthImageSize,
     heightImageSize,
-    secretAccessKey,
-    bucketName,
     accessToken,
-    regionAWS,
     clientId,
     clientSecret,
     urlRefreshToken,
