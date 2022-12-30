@@ -352,14 +352,11 @@ export function CameraView(propCamera: CameraType) {
        * upload image to s3 aws with presigned url
        */
       var formData = new FormData();
-      const securityToken = response.data.fields['x-amz-security-token'];
-      console.log('securityToken', securityToken);
-      formData.append('key', response.data.fields.key);
-      formData.append('AWSAccessKeyId', response.data.fields.AWSAccessKeyId);
-      formData.append('policy', response.data.fields.policy);
-      formData.append('signature', response.data.fields.signature);
+      for (const [key, value] of Object.entries(response.data.fields)) {
+        console.log(`${key}: ${value}`);
+        formData.append(`${key}`, `${value}`);
+      }
       console.log('data upload image', formData);
-      // formData.append('ACL', 'public-read');
       formData.append('file', {
         uri: uriImage,
         type: 'image/png',
