@@ -350,6 +350,7 @@ export const postForm = async (
             : {
                 'Content-Type': 'multipart/form-data',
                 'Accept': '*/*',
+                'x-amz-security-token': `${securityToken}`,
               },
         data: data,
       });
