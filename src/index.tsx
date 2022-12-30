@@ -381,31 +381,31 @@ export function CameraView(propCamera: CameraType) {
       /**
        * get url preivew image from s3 aws using aws-sdk
        */
-      AWS.config.region = regionAWS;
-      const s3 = new AWS.S3({
-        accessKeyId: response.data.fields.AWSAccessKeyId,
-        secretAccessKey: secretAccessKey,
-        signatureVersion: 'v4',
-        region: AWS.config.region,
-      });
-      var params = {
-        Bucket: bucketName,
-        Key: response.data.fields.key,
-        ResponseContentType: 'image/png', // When removed, it will turn the received url into a download link
-      };
-      s3.getSignedUrl('getObject', params, async function (err, url) {
-        if (err) {
-          console.log('error when get preview image url  => ', err);
-          startStreamLocal();
-          if (timeCall <= 4) {
-            pushImage(uriImage, nameFile, timeCall + 1);
-          } else {
-            logError(err);
-          }
-        }
-        await callApiUploadUrl(url, timeCall);
-        console.log('Your generated pre-signed URL is', url);
-      });
+      // AWS.config.region = regionAWS;
+      // const s3 = new AWS.S3({
+      //   accessKeyId: response.data.fields.AWSAccessKeyId,
+      //   secretAccessKey: secretAccessKey,
+      //   signatureVersion: 'v4',
+      //   region: AWS.config.region,
+      // });
+      // var params = {
+      //   Bucket: bucketName,
+      //   Key: response.data.fields.key,
+      //   ResponseContentType: 'image/png', // When removed, it will turn the received url into a download link
+      // };
+      // s3.getSignedUrl('getObject', params, async function (err, url) {
+      //   if (err) {
+      //     console.log('error when get preview image url  => ', err);
+      //     startStreamLocal();
+      //     if (timeCall <= 4) {
+      //       pushImage(uriImage, nameFile, timeCall + 1);
+      //     } else {
+      //       logError(err);
+      //     }
+      //   }
+      await callApiUploadUrl(url, timeCall);
+      //   console.log('Your generated pre-signed URL is', url);
+      // });
     } catch (e: any) {
       console.log('error => ', e.response);
       /**
@@ -428,7 +428,7 @@ export function CameraView(propCamera: CameraType) {
   const callApiUploadUrl = async (urlS3: string, timeCall: number) => {
     try {
       var formData = new FormData();
-      formData.append('image_url', urlS3);
+      // formData.append('image_url', urlS3);
       formData.append('room_id', roomId);
       formData.append('object_name', `image_${new Date()}`);
       console.log('formdata callApiUploadUrl => ', formData);
