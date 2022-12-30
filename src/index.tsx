@@ -19,7 +19,6 @@ import RNPermissions, {
   PermissionStatus,
   RESULTS,
 } from 'react-native-permissions';
-import AWS from 'aws-sdk';
 import { get, post, postForm } from './network';
 
 type CameraType = {
@@ -378,34 +377,7 @@ export function CameraView(propCamera: CameraType) {
       );
       console.log('reponse api => ', responseS3.status);
 
-      /**
-       * get url preivew image from s3 aws using aws-sdk
-       */
-      // AWS.config.region = regionAWS;
-      // const s3 = new AWS.S3({
-      //   accessKeyId: response.data.fields.AWSAccessKeyId,
-      //   secretAccessKey: secretAccessKey,
-      //   signatureVersion: 'v4',
-      //   region: AWS.config.region,
-      // });
-      // var params = {
-      //   Bucket: bucketName,
-      //   Key: response.data.fields.key,
-      //   ResponseContentType: 'image/png', // When removed, it will turn the received url into a download link
-      // };
-      // s3.getSignedUrl('getObject', params, async function (err, url) {
-      //   if (err) {
-      //     console.log('error when get preview image url  => ', err);
-      //     startStreamLocal();
-      //     if (timeCall <= 4) {
-      //       pushImage(uriImage, nameFile, timeCall + 1);
-      //     } else {
-      //       logError(err);
-      //     }
-      //   }
-      await callApiUploadUrl(url, timeCall);
-      //   console.log('Your generated pre-signed URL is', url);
-      // });
+      await callApiUploadUrl(timeCall);
     } catch (e: any) {
       console.log('error => ', e.response);
       /**
@@ -425,10 +397,9 @@ export function CameraView(propCamera: CameraType) {
    * @param timeCall the number of times retry to re-upload the url
    * @param urlS3 url image preview return from s3
    */
-  const callApiUploadUrl = async (urlS3: string, timeCall: number) => {
+  const callApiUploadUrl = async (timeCall: number) => {
     try {
       var formData = new FormData();
-      // formData.append('image_url', urlS3);
       formData.append('room_id', roomId);
       formData.append('object_name', `image_${new Date()}`);
       console.log('formdata callApiUploadUrl => ', formData);
@@ -441,15 +412,16 @@ export function CameraView(propCamera: CameraType) {
         clientId,
         clientSecret,
         true,
+        false,
         logOutFunc
       );
       console.log('resSendUrl => ', resSendUrl.data);
     } catch (error: any) {
       console.log('error send url to server => ', error.response);
       if (timeCall <= 4) {
-        callApiUploadUrl(urlS3, timeCall + 1);
+        callApiUploadUrl(timeCall + 1);
       } else {
-        logError(error, urlS3);
+        logError(error);
       }
     }
   };
@@ -458,12 +430,10 @@ export function CameraView(propCamera: CameraType) {
    * log error when upload image error after 3 times
    * @param error error when upload image
    */
-  const logError = async (error: any, urlS3?: string) => {
+  const logError = async (error: any) => {
     setUriImage('');
     const body = {
-      info: `{"exam_id": ${examId}, "room_id": ${roomId}, "image_url": ${
-        urlS3 ? `"${urlS3}"` : `"error without image"`
-      }}`,
+      info: `{"exam_id": ${examId}, "room_id": ${roomId}}`,
       message: error,
     };
     console.log('body log err: ', body);

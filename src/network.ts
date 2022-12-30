@@ -323,7 +323,6 @@ export const postForm = async (
   isNoneAuth = true,
   isPublic = false,
   logOutFunc: () => void
-  // securityToken?: string
 ): Promise<any> => {
   if (await checkInternetConnection()) {
     try {
@@ -345,12 +344,10 @@ export const postForm = async (
                 'Accept': '*/*',
                 'Authorization': `Bearer ${access_token}`,
                 'x-amz-acl': 'public-read',
-                // 'x-amz-security-token': `${securityToken}`,
               }
             : {
                 'Content-Type': 'multipart/form-data',
                 'Accept': '*/*',
-                // 'x-amz-security-token': `${securityToken}`,
               },
         data: data,
       });
