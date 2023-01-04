@@ -328,7 +328,7 @@ export const postForm = async (
       // alertPresent = false;
 
       let responseJson = await axios({
-        method: 'PUT',
+        method: 'POST',
         url: url,
         headers: isNoneAuth
           ? {
