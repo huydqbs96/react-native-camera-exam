@@ -321,7 +321,6 @@ export const postForm = async (
   clientId: string,
   clientSecret: string,
   isNoneAuth = true,
-  isPublic = false,
   logOutFunc: () => void
 ): Promise<any> => {
   if (await checkInternetConnection()) {
@@ -329,26 +328,18 @@ export const postForm = async (
       // alertPresent = false;
 
       let responseJson = await axios({
-        method: 'POST',
+        method: 'PUT',
         url: url,
-        headers:
-          isNoneAuth && !isPublic
-            ? {
-                'Content-Type': 'multipart/form-data',
-                'Accept': '*/*',
-                'Authorization': `Bearer ${access_token}`,
-              }
-            : isNoneAuth && isPublic
-            ? {
-                'Content-Type': 'multipart/form-data',
-                'Accept': '*/*',
-                'Authorization': `Bearer ${access_token}`,
-                'x-amz-acl': 'public-read',
-              }
-            : {
-                'Content-Type': 'multipart/form-data',
-                'Accept': '*/*',
-              },
+        headers: isNoneAuth
+          ? {
+              'Content-Type': 'multipart/form-data',
+              'Accept': '*/*',
+              'Authorization': `Bearer ${access_token}`,
+            }
+          : {
+              'Content-Type': 'multipart/form-data',
+              'Accept': '*/*',
+            },
         data: data,
       });
 
@@ -384,7 +375,6 @@ export const postForm = async (
             clientId,
             clientSecret,
             isNoneAuth,
-            isPublic,
             logOutFunc
           );
         } else {

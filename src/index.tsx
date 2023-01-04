@@ -363,7 +363,6 @@ export function CameraView(propCamera: CameraType) {
         clientId,
         clientSecret,
         false,
-        true,
         logOutFunc
       );
       console.log('reponse api => ', responseS3.status);
