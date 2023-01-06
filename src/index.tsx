@@ -402,7 +402,6 @@ export function CameraView(propCamera: CameraType) {
         clientId,
         clientSecret,
         true,
-        false,
         logOutFunc
       );
       console.log('resSendUrl => ', resSendUrl.data);
